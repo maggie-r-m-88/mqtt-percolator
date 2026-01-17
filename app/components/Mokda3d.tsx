@@ -5,6 +5,7 @@ import { OrbitControls, useGLTF, Center, Bounds } from "@react-three/drei";
 import { useEffect } from "react";
 import { useTexture } from "@react-three/drei";
 import * as THREE from "three";
+import WarmerRing from "./WarmerRing";
 
 type MokaState = "heating" | "brewing" | "finished" | "idle";
 
@@ -82,21 +83,6 @@ function TableTop() {
     );
 }
 
-function WarmerRing() {
-    return (
-        <mesh position={[0, -0.35, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-            {/* Torus: args = [radius, tube thickness, radial segments, tubular segments] */}
-            <torusGeometry args={[0.5, 0.05, 16, 100]} />
-            <meshStandardMaterial
-                color="#ff6600"
-                metalness={0.6}
-                roughness={0.4}
-                emissive="#ff3300"
-                emissiveIntensity={0.3} // slightly glowing
-            />
-        </mesh>
-    );
-}
 
 export default function Moka3D({
     temperature,
@@ -126,12 +112,12 @@ export default function Moka3D({
     const WATER_Y_END = -0.32;
 
     const waterHeight =
-    WATER_HEIGHT_MIN +
-    waterRatio * (WATER_HEIGHT_MAX - WATER_HEIGHT_MIN);
+        WATER_HEIGHT_MIN +
+        waterRatio * (WATER_HEIGHT_MAX - WATER_HEIGHT_MIN);
 
     const waterY =
-    WATER_Y_END +
-    waterRatio * (WATER_Y_START - WATER_Y_END);
+        WATER_Y_END +
+        waterRatio * (WATER_Y_START - WATER_Y_END);
 
     // --- Coffee level (dynamic now) ---
     const coffeeRatio = coffeeVolume !== null ? Math.min(Math.max(coffeeVolume / 100, 0), 1) : 0;
@@ -186,41 +172,41 @@ export default function Moka3D({
 
                             {/* ---------------- Dynamic water level ---------------- */}
                             {waterVolume !== null && (
-                            <mesh position={[0, waterY, 0]}>
-                                <cylinderGeometry
-                                args={[0.41, 0.47, waterHeight, 32]}
-                                />
-                                <meshStandardMaterial
-                                color="lightblue"
-                                transparent
-                                opacity={0.5}
-                                />
-                            </mesh>
+                                <mesh position={[0, waterY, 0]}>
+                                    <cylinderGeometry
+                                        args={[0.41, 0.47, waterHeight, 32]}
+                                    />
+                                    <meshStandardMaterial
+                                        color="lightblue"
+                                        transparent
+                                        opacity={0.5}
+                                    />
+                                </mesh>
                             )}
 
 
                             {/* ---------------- Finished coffee (MAX level) ---------------- */}
                             {coffeeVolume !== null && (
-    <mesh position={[0, coffeeY, 0]}>
-        <cylinderGeometry args={[coffeeTopRadius, coffeeBottomRadius, coffeeHeight, 32]} />
-        <meshStandardMaterial
-            color={new THREE.Color().lerpColors(
-                new THREE.Color("#d9b382"), // light coffee at start
-                new THREE.Color("#3b2415"), // dark coffee when full
-                coffeeRatio
-            )}
-            transparent
-            opacity={0.6}
-            roughness={0.4}
-            metalness={0}
-        />
-    </mesh>
-)}
+                                <mesh position={[0, coffeeY, 0]}>
+                                    <cylinderGeometry args={[coffeeTopRadius, coffeeBottomRadius, coffeeHeight, 32]} />
+                                    <meshStandardMaterial
+                                        color={new THREE.Color().lerpColors(
+                                            new THREE.Color("#d9b382"), // light coffee at start
+                                            new THREE.Color("#3b2415"), // dark coffee when full
+                                            coffeeRatio
+                                        )}
+                                        transparent
+                                        opacity={0.6}
+                                        roughness={0.4}
+                                        metalness={0}
+                                    />
+                                </mesh>
+                            )}
 
                             {/* ---------------- Coffee grounds ---------------- */}
                             <CoffeeGrounds />
 
-                            <WarmerRing />
+                            <WarmerRing temperature={temperature} idle={state === "idle"} />
 
                             <TableTop />
                         </group>
