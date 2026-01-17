@@ -18,32 +18,35 @@ type Moka3DProps = {
 };
 
 
-function MokaPotTransparent() {
-    const gltf = useGLTF("/italian_coffee_machine_moka.glb");
+type MokaPotTransparentProps = {
+  state: MokaState | null;
+};
 
-    // Make the model semi-transparent
-    useEffect(() => {
-        gltf.scene.traverse((child: any) => {
-            if (child.isMesh) {
-                child.material = child.material.clone();
-                child.material.color.set("white");
-                child.material.transparent = true;
-                child.material.opacity = 0.2;
-                child.material.depthWrite = false;
-            }
-        });
-    }, [gltf]);
+function MokaPotTransparent({ state }: MokaPotTransparentProps) {
+  const gltf = useGLTF("/italian_coffee_machine_moka.glb");
 
-    const coffeeTexture = useTexture("/coffee-ground.webp");
+  useEffect(() => {
+    gltf.scene.traverse((child: any) => {
+      if (child.isMesh) {
+        child.material = child.material.clone();
+        child.material.color.set("white");
+        child.material.transparent = true;
 
-    useEffect(() => {
-        coffeeTexture.wrapS = coffeeTexture.wrapT = THREE.RepeatWrapping;
-        coffeeTexture.repeat.set(2, 1); // repeat around the cylinder
-    }, [coffeeTexture]);
+        // Adjust opacity based on state
+        if (state === "idle") {
+          child.material.opacity = 0.75; // more opaque when idle
+        } else {
+          child.material.opacity = 0.25; // more transparent when active
+        }
 
+        child.material.depthWrite = false;
+      }
+    });
+  }, [gltf, state]); // add state as dependency
 
-    return <primitive object={gltf.scene} />;
+  return <primitive object={gltf.scene} />;
 }
+
 
 function CoffeeGrounds() {
     const texture = useTexture("/coffee-ground.webp");
@@ -102,6 +105,11 @@ export default function Moka3D({
         });
     }, [temperature, pressure, coffeeVolume, waterVolume, state]);
 
+    const isIdle = state === "idle";
+    const visibleWater = waterVolume !== null && !isIdle;
+    const visibleCoffee = coffeeVolume !== null && !isIdle;
+
+
     // Calculate water level position and height
     const waterRatio = Math.max(0, Math.min(1, waterVolume / 100));
 
@@ -145,7 +153,7 @@ export default function Moka3D({
 
 
                         {/* Your transparent GLB pot */}
-                        <MokaPotTransparent />
+                        <MokaPotTransparent state={state} />
 
                         <group position={[-0.20, -0.65, 0]}>
                             {/* Funnel base */}
@@ -171,11 +179,10 @@ export default function Moka3D({
                             </mesh>
 
                             {/* ---------------- Dynamic water level ---------------- */}
-                            {waterVolume !== null && (
+                            {/* ---------------- Dynamic water level ---------------- */}
+                            {waterVolume !== null && state !== "idle" && (
                                 <mesh position={[0, waterY, 0]}>
-                                    <cylinderGeometry
-                                        args={[0.41, 0.47, waterHeight, 32]}
-                                    />
+                                    <cylinderGeometry args={[0.41, 0.47, waterHeight, 32]} />
                                     <meshStandardMaterial
                                         color="lightblue"
                                         transparent
@@ -186,13 +193,14 @@ export default function Moka3D({
 
 
                             {/* ---------------- Finished coffee (MAX level) ---------------- */}
-                            {coffeeVolume !== null && (
+                            {/* ---------------- Finished coffee ---------------- */}
+                            {coffeeVolume !== null && state !== "idle" && (
                                 <mesh position={[0, coffeeY, 0]}>
                                     <cylinderGeometry args={[coffeeTopRadius, coffeeBottomRadius, coffeeHeight, 32]} />
                                     <meshStandardMaterial
                                         color={new THREE.Color().lerpColors(
-                                            new THREE.Color("#d9b382"), // light coffee at start
-                                            new THREE.Color("#3b2415"), // dark coffee when full
+                                            new THREE.Color("#d9b382"),
+                                            new THREE.Color("#3b2415"),
                                             coffeeRatio
                                         )}
                                         transparent
