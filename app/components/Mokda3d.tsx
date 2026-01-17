@@ -1,8 +1,8 @@
 "use client";
 
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, useGLTF, Center, Bounds } from "@react-three/drei";
-import { useEffect } from "react";
+import { useEffect, useRef, useMemo  } from "react";
 import { useTexture } from "@react-three/drei";
 import * as THREE from "three";
 import WarmerRing from "./WarmerRing";
@@ -31,13 +31,7 @@ function MokaPotTransparent({ state }: MokaPotTransparentProps) {
         child.material = child.material.clone();
         child.material.color.set("white");
         child.material.transparent = true;
-
-        // Adjust opacity based on state
-        if (state === "idle") {
-          child.material.opacity = 0.55; // more opaque when idle
-        } else {
-          child.material.opacity = 0.15; // more transparent when active
-        }
+        child.material.opacity = 0.1;
 
         child.material.depthWrite = false;
       }
@@ -78,7 +72,7 @@ function TableTop() {
             {/* args: [width, height, depth] */}
             <boxGeometry args={[3, 0.05, 3]} />
             <meshStandardMaterial
-                color="#222"        // dark tabletop
+                color="#BBBBBB"        // dark tabletop
                 metalness={0.2}     // slightly metallic
                 roughness={0.6}     // not shiny
             />
@@ -86,7 +80,66 @@ function TableTop() {
     );
 }
 
+type SteamProps = {
+  active: boolean;
+};
 
+function Steam({ active }: SteamProps) {
+  const pointsRef = useRef<THREE.Points>(null!);
+
+  const particleCount = 60;
+
+  const positions = useMemo(() => {
+    const arr = new Float32Array(particleCount * 3);
+    for (let i = 0; i < particleCount; i++) {
+      arr[i * 3 + 0] = (Math.random() - 0.5) * 0.05; // x
+      arr[i * 3 + 1] = Math.random() * 0.2;         // y
+      arr[i * 3 + 2] = (Math.random() - 0.5) * 0.05; // z
+    }
+    return arr;
+  }, []);
+
+  useFrame((_, delta) => {
+    if (!active) return;
+
+    const pos = pointsRef.current.geometry.attributes.position.array as Float32Array;
+
+    for (let i = 0; i < particleCount; i++) {
+      const yIndex = i * 3 + 1;
+      pos[yIndex] += delta * 0.12; // rise speed
+
+      if (pos[yIndex] > 0.5) {
+        pos[yIndex] = 0;
+        pos[i * 3 + 0] = (Math.random() - 0.5) * 0.05;
+        pos[i * 3 + 2] = (Math.random() - 0.5) * 0.05;
+      }
+    }
+
+    pointsRef.current.geometry.attributes.position.needsUpdate = true;
+  });
+
+  if (!active) return null;
+
+  return (
+    <points ref={pointsRef} position={[0, 0.92, 0]}>
+      <bufferGeometry>
+        <bufferAttribute
+          attach="attributes-position"
+          count={particleCount}
+          array={positions}
+          itemSize={3}
+        />
+      </bufferGeometry>
+      <pointsMaterial
+        color="#FFF" // change to white
+        size={0.04}
+        transparent
+        opacity={0.35}
+        depthWrite={false}
+      />
+    </points>
+  );
+}
 export default function Moka3D({
     temperature,
     pressure,
@@ -138,18 +191,25 @@ export default function Moka3D({
 
 
     return (
-        <Canvas camera={{ position: [3, 2, 5], fov: 30 }}>
+        <Canvas camera={{ position: [3, 2, 5], fov: 30 }} className="background">
             {/* Lighting */}
             <ambientLight intensity={0.5} />
             <directionalLight position={[5, 5, 5]} intensity={1} />
 
             {/* Controls */}
-            <OrbitControls />
+            <OrbitControls   minDistance={4}
+                maxDistance={8}
+                minPolarAngle={Math.PI / 4}
+                maxPolarAngle={Math.PI / 2} />
 
             {/* Automatically center and scale the pot */}
             <Bounds fit clip>
                 <Center>
                     <group scale={1.5}>
+
+                        <group position={[-0.85, -0.35, 0]}>
+  <Steam active={state === "finished"} />
+</group>
 
 
                         {/* Your transparent GLB pot */}
@@ -185,32 +245,37 @@ export default function Moka3D({
                                 <mesh position={[0, waterY, 0]}>
                                     <cylinderGeometry args={[0.41, 0.47, waterHeight, 32]} />
                                     <meshStandardMaterial
-                                        color="lightblue"
-                                        transparent
-                                        opacity={0.5}
+                                          color="#8fd3ff"        // subtle water tint
+
+                                            opacity={0.35}
+                                            roughness={0.05}
+                                            metalness={0.1}
+                                            envMapIntensity={1}
                                     />
                                 </mesh>
                             )}
 
 
-                            {/* ---------------- Finished coffee (MAX level) ---------------- */}
                             {/* ---------------- Finished coffee ---------------- */}
                             {coffeeVolume !== null && state !== "idle" && (
-                                <mesh position={[0, coffeeY, 0]}>
-                                    <cylinderGeometry args={[coffeeTopRadius, coffeeBottomRadius, coffeeHeight, 32]} />
-                                    <meshStandardMaterial
-                                        color={new THREE.Color().lerpColors(
-                                            new THREE.Color("#d9b382"),
-                                            new THREE.Color("#3b2415"),
-                                            coffeeRatio
-                                        )}
-                                        transparent
-                                        opacity={0.6}
-                                        roughness={0.4}
-                                        metalness={0}
-                                    />
-                                </mesh>
-                            )}
+  <mesh position={[0, coffeeY, 0]}>
+    <cylinderGeometry args={[coffeeTopRadius, coffeeBottomRadius, coffeeHeight, 32]} />
+    <meshStandardMaterial
+      color={new THREE.Color().lerpColors(
+        new THREE.Color("#caa472"), // lighter crema-like start
+        new THREE.Color("#2a1409"), // deep espresso
+        coffeeRatio
+      )}
+        transparent
+  opacity={0.75}
+  roughness={0.15}
+  metalness={0.05}
+  emissive="#2a1409"
+  emissiveIntensity={0.1 + coffeeRatio * 0.15}
+    />
+  </mesh>
+)}
+
 
                             {/* ---------------- Coffee grounds ---------------- */}
                             <CoffeeGrounds />
