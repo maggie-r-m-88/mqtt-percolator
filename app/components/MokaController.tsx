@@ -1,6 +1,4 @@
-"use client";
-
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Client, Message } from "paho-mqtt";
 import { MokaState } from "../page";
 
@@ -27,6 +25,7 @@ export default function MokaController({
 }: Props) {
   const clientRef = useRef<Client | null>(null);
   const subscribedRef = useRef(false);
+  const [disconnected, setDisconnected] = useState(false);
 
   const CLIENT_ID = "moka-simulator-ui";
   const USERNAME = process.env.NEXT_PUBLIC_HIVEMQ_USERNAME!;
@@ -41,7 +40,6 @@ export default function MokaController({
 
     client.onMessageArrived = (msg: Message) => {
       const value = msg.payloadString;
-      console.log("📩 MQTT:", msg.destinationName, value);
 
       switch (msg.destinationName) {
         case "moka/temperature":
@@ -59,6 +57,11 @@ export default function MokaController({
       }
     };
 
+    client.onConnectionLost = () => {
+      console.log("⚠️ MQTT disconnected");
+      setDisconnected(true);
+    };
+
     client.connect({
       useSSL: true,
       userName: USERNAME,
@@ -66,6 +69,7 @@ export default function MokaController({
       cleanSession: false,
       onSuccess: () => {
         console.log("✅ MQTT connected");
+        setDisconnected(false);
         if (!subscribedRef.current) {
           client.subscribe("moka/#", { qos: 1 });
           subscribedRef.current = true;
@@ -85,24 +89,32 @@ export default function MokaController({
   const reset = () => fetch("/api/reset");
 
   return (
-    <div className="w-full flex items-center justify-between bg-gray-100 p-2 px-4">
-      <div className="flex gap-2">
-        <button onClick={start} className="bg-green-500 text-white px-3 py-1 rounded">
-          Start
-        </button>
-        <button onClick={stop} className="bg-red-500 text-white px-3 py-1 rounded">
-          Stop
-        </button>
-        <button onClick={reset} className="bg-yellow-500 text-white px-3 py-1 rounded">
-          Reset
-        </button>
-      </div>
+    <div className="w-full flex flex-col gap-2 bg-gray-100 p-2 px-4">
+      {disconnected && (
+        <div className="bg-red-200 text-red-800 p-2 rounded text-center">
+          ⚡ Coffee Pot Alert: Lost connection! The pot is taking a coffee break ☕
+        </div>
+      )}
 
-      <div className="flex gap-4 text-sm">
-        <div><strong>Temp:</strong> {temperature ?? "—"}</div>
-        <div><strong>Pressure:</strong> {pressure ?? "—"}</div>
-        <div><strong>Coffee:</strong> {coffeeVolume ?? "—"}</div>
-        <div><strong>State:</strong> {state ?? "—"}</div>
+      <div className="flex items-center justify-between">
+        <div className="flex gap-2">
+          <button onClick={start} className="bg-green-500 text-white px-3 py-1 rounded">
+            Start
+          </button>
+          <button onClick={stop} className="bg-red-500 text-white px-3 py-1 rounded">
+            Stop
+          </button>
+          <button onClick={reset} className="bg-yellow-500 text-white px-3 py-1 rounded">
+            Reset
+          </button>
+        </div>
+
+        <div className="flex gap-4 text-sm">
+          <div><strong>Temp:</strong> {temperature ?? "—"}</div>
+          <div><strong>Pressure:</strong> {pressure ?? "—"}</div>
+          <div><strong>Coffee:</strong> {coffeeVolume ?? "—"}</div>
+          <div><strong>State:</strong> {state ?? "—"}</div>
+        </div>
       </div>
     </div>
   );
