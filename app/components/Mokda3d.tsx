@@ -9,6 +9,8 @@ import MokaPotTransparent from "./MokaPotTransparent";
 import CoffeeGrounds from "./CoffeeGrounds";
 import TableTop from "./TableTop";
 import Steam from "./Steam";
+import Water from "./Water";
+
 
 type MokaState = "heating" | "brewing" | "finished" | "idle";
 
@@ -30,13 +32,13 @@ export default function Moka3D({
 }: Moka3DProps) {
     // Console log whenever props update
     useEffect(() => {
-        console.log("🔥 Moka3D Props Updated:", {
+        /* console.log("🔥 Moka3D Props Updated:", {
             temperature,
             pressure,
             coffeeVolume,
             waterVolume,
             state,
-        });
+        }); */
     }, [temperature, pressure, coffeeVolume, waterVolume, state]);
 
     const isIdle = state === "idle";
@@ -96,7 +98,6 @@ export default function Moka3D({
                         {/* Your transparent GLB pot */}
                         <MokaPotTransparent state={state} />
 
-
                         <group position={[-0.20, -0.65, 0]}>
                             {/* Funnel base */}
                             <mesh position={[0, 0, 0]}>
@@ -108,6 +109,8 @@ export default function Moka3D({
                                     depthWrite={false}
                                 />
                             </mesh>
+
+
 
                             {/* Short top cylinder (spout) */}
                             <mesh position={[0, 0.45, 0]}>
@@ -121,20 +124,7 @@ export default function Moka3D({
                             </mesh>
 
                             {/* ---------------- Dynamic water level ---------------- */}
-                            {/* ---------------- Dynamic water level ---------------- */}
-                            {waterVolume !== null && state !== "idle" && (
-                                <mesh position={[0, waterY, 0]}>
-                                    <cylinderGeometry args={[0.41, 0.47, waterHeight, 32]} />
-                                    <meshStandardMaterial
-                                        color="#8fd3ff"        // subtle water tint
-
-                                        opacity={0.35}
-                                        roughness={0.05}
-                                        metalness={0.1}
-                                        envMapIntensity={1}
-                                    />
-                                </mesh>
-                            )}
+                            <Water waterVolume={waterVolume} state={state} />
 
 
                             {/* ---------------- Finished coffee ---------------- */}
@@ -156,7 +146,6 @@ export default function Moka3D({
                                     />
                                 </mesh>
                             )}
-
 
                             {/* ---------------- Coffee grounds ---------------- */}
                             <CoffeeGrounds />
