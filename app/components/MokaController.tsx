@@ -2,18 +2,17 @@
 
 import { useEffect, useRef } from "react";
 import { Client, Message } from "paho-mqtt";
-
-type MokaState = "heating" | "brewing" | "finished" | "idle";
+import { MokaState } from "../page";
 
 type Props = {
   temperature: number | null;
   pressure: number | null;
   coffeeVolume: number | null;
   state: MokaState | null;
-  setTemperature: (val: number) => void;
-  setPressure: (val: number) => void;
-  setCoffeeVolume: (val: number) => void;
-  setState: (val: MokaState) => void;
+  setTemperature: (v: number) => void;
+  setPressure: (v: number) => void;
+  setCoffeeVolume: (v: number) => void;
+  setState: (v: MokaState) => void;
 };
 
 export default function MokaController({
@@ -37,99 +36,73 @@ export default function MokaController({
   useEffect(() => {
     if (clientRef.current) return;
 
-    const mqttClient = new Client(WSS_URL, CLIENT_ID);
-    clientRef.current = mqttClient;
+    const client = new Client(WSS_URL, CLIENT_ID);
+    clientRef.current = client;
 
-    mqttClient.onMessageArrived = (message: Message) => {
-      const { destinationName, payloadString } = message;
+    client.onMessageArrived = (msg: Message) => {
+      const value = msg.payloadString;
+      console.log("📩 MQTT:", msg.destinationName, value);
 
-      switch (destinationName) {
+      switch (msg.destinationName) {
         case "moka/temperature":
-          setTemperature(Number(payloadString));
+          setTemperature(Number(value));
           break;
         case "moka/pressure":
-          setPressure(Number(payloadString));
+          setPressure(Number(value));
           break;
         case "moka/coffee_volume":
-          setCoffeeVolume(Number(payloadString));
+          setCoffeeVolume(Number(value));
           break;
         case "moka/state":
-          setState(payloadString as MokaState);
+          setState(value as MokaState);
           break;
       }
     };
 
-    mqttClient.onConnectionLost = (err) => {
-      console.error("❌ MQTT connection lost", err);
-    };
-
-    mqttClient.connect({
+    client.connect({
       useSSL: true,
       userName: USERNAME,
       password: PASSWORD,
-      cleanSession: false, // persistent session
-      keepAliveInterval: 30,
+      cleanSession: false,
       onSuccess: () => {
-        console.log("✅ Frontend connected (persistent)");
+        console.log("✅ MQTT connected");
         if (!subscribedRef.current) {
-          mqttClient.subscribe("moka/#", { qos: 1 });
+          client.subscribe("moka/#", { qos: 1 });
           subscribedRef.current = true;
         }
-      },
-      onFailure: (err) => {
-        console.error("❌ MQTT frontend connection failed", err);
       },
     });
 
     return () => {
       try {
-        mqttClient.disconnect();
+        client.disconnect();
       } catch {}
     };
   }, [setTemperature, setPressure, setCoffeeVolume, setState]);
 
-  const start = async () => fetch("/api/start");
-  const stop = async () => fetch("/api/stop");
-  const reset = async () => fetch("/api/reset");
+  const start = () => fetch("/api/start");
+  const stop = () => fetch("/api/stop");
+  const reset = () => fetch("/api/reset");
 
   return (
-    <div className="w-full flex items-center justify-between bg-gray-100 p-2 px-4 space-x-4">
-      {/* Controls */}
+    <div className="w-full flex items-center justify-between bg-gray-100 p-2 px-4">
       <div className="flex gap-2">
-        <button
-          onClick={start}
-          className="bg-green-500 text-white px-3 py-1 rounded"
-        >
+        <button onClick={start} className="bg-green-500 text-white px-3 py-1 rounded">
           Start
         </button>
-        <button
-          onClick={stop}
-          className="bg-red-500 text-white px-3 py-1 rounded"
-        >
+        <button onClick={stop} className="bg-red-500 text-white px-3 py-1 rounded">
           Stop
         </button>
-        <button
-          onClick={reset}
-          className="bg-yellow-500 text-white px-3 py-1 rounded"
-        >
+        <button onClick={reset} className="bg-yellow-500 text-white px-3 py-1 rounded">
           Reset
         </button>
       </div>
 
-      {/* Data display */}
-      <div className="flex gap-4 text-sm text-gray-700">
-        <div>
-          <strong>Temp:</strong> {temperature ?? "—"} °C
-        </div>
-        <div>
-          <strong>Pressure:</strong> {pressure ?? "—"} bar
-        </div>
-        <div>
-          <strong>Coffee:</strong> {coffeeVolume ?? "—"} ml
-        </div>
-        <div>
-          <strong>State:</strong> {state ?? "—"}
-        </div>
+      <div className="flex gap-4 text-sm">
+        <div><strong>Temp:</strong> {temperature ?? "—"}</div>
+        <div><strong>Pressure:</strong> {pressure ?? "—"}</div>
+        <div><strong>Coffee:</strong> {coffeeVolume ?? "—"}</div>
+        <div><strong>State:</strong> {state ?? "—"}</div>
       </div>
     </div>
   );

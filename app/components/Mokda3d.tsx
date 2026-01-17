@@ -12,6 +12,7 @@ type Moka3DProps = {
     temperature: number | null;
     pressure: number | null;
     coffeeVolume: number | null;
+    waterVolume: number | null;
     state: MokaState | null;
 };
 
@@ -101,6 +102,7 @@ export default function Moka3D({
     temperature,
     pressure,
     coffeeVolume,
+    waterVolume,
     state,
 }: Moka3DProps) {
     // Console log whenever props update
@@ -109,9 +111,37 @@ export default function Moka3D({
             temperature,
             pressure,
             coffeeVolume,
+            waterVolume,
             state,
         });
-    }, [temperature, pressure, coffeeVolume, state]);
+    }, [temperature, pressure, coffeeVolume, waterVolume, state]);
+
+    // Calculate water level position and height
+    const waterRatio = Math.max(0, Math.min(1, waterVolume / 100));
+
+    const WATER_HEIGHT_MIN = 0.01;
+    const WATER_HEIGHT_MAX = 0.57;
+
+    const WATER_Y_START = -0.02;
+    const WATER_Y_END = -0.32;
+
+    const waterHeight =
+    WATER_HEIGHT_MIN +
+    waterRatio * (WATER_HEIGHT_MAX - WATER_HEIGHT_MIN);
+
+    const waterY =
+    WATER_Y_END +
+    waterRatio * (WATER_Y_START - WATER_Y_END);
+
+    // --- Coffee level (dynamic now) ---
+    const coffeeRatio = coffeeVolume !== null ? Math.min(Math.max(coffeeVolume / 100, 0), 1) : 0;
+
+    const coffeeY = 0.59 + coffeeRatio * (0.86 - 0.59);
+    const coffeeTopRadius = 0.01 + coffeeRatio * (0.48 - 0.01);
+    const coffeeBottomRadius = 0.40; // stays constant
+    const coffeeHeight = 0.01 + coffeeRatio * (0.61 - 0.01);
+
+
 
     return (
         <Canvas camera={{ position: [3, 2, 5], fov: 50 }}>
@@ -154,32 +184,39 @@ export default function Moka3D({
                                 />
                             </mesh>
 
-                            {/* ---------------- Static water level (funnel-shaped) ---------------- */}
-                            <mesh position={[0, -0.32, 0]}>{/* BEGIN LEVEL */}
-                            {/* <mesh position={[0, -0.02, 0]}> */}{/* FULL LEVEL */}
-                                <cylinderGeometry args={[0.41, 0.47, 0.01, 32]} />{/* FULL LEVEL */}
-                                {/* <cylinderGeometry args={[0.41, 0.47, 0.57, 32]} /> */}{/* BEGIN LEVEL */}
+                            {/* ---------------- Dynamic water level ---------------- */}
+                            {waterVolume !== null && (
+                            <mesh position={[0, waterY, 0]}>
+                                <cylinderGeometry
+                                args={[0.41, 0.47, waterHeight, 32]}
+                                />
                                 <meshStandardMaterial
-                                    color="lightblue"
-                                    transparent
-                                    opacity={0.5}
+                                color="lightblue"
+                                transparent
+                                opacity={0.5}
                                 />
                             </mesh>
+                            )}
+
 
                             {/* ---------------- Finished coffee (MAX level) ---------------- */}
-                            {/*<mesh position={[0, .86, 0]}>*}{/* FULL LEVEL */}
-                            <mesh position={[0, 0.59, 0]}>{/* BEGIN LEVEL */}
-                                {/* top wider than bottom */}
-                                {/* <cylinderGeometry args={[0.48, 0.40, 0.61, 32]} />  */}{/* FULL LEVEL */}
-                                <cylinderGeometry args={[0.01, .40, 0.01, 32]} />{/* BEGIN LEVEL */}
-                                <meshStandardMaterial
-                                    color="#3b2415"
-                                    transparent
-                                    opacity={0.6}
-                                    roughness={0.4}
-                                    metalness={0}
-                                />
-                            </mesh>
+                            {coffeeVolume !== null && (
+    <mesh position={[0, coffeeY, 0]}>
+        <cylinderGeometry args={[coffeeTopRadius, coffeeBottomRadius, coffeeHeight, 32]} />
+        <meshStandardMaterial
+            color={new THREE.Color().lerpColors(
+                new THREE.Color("#d9b382"), // light coffee at start
+                new THREE.Color("#3b2415"), // dark coffee when full
+                coffeeRatio
+            )}
+            transparent
+            opacity={0.6}
+            roughness={0.4}
+            metalness={0}
+        />
+    </mesh>
+)}
+
                             {/* ---------------- Coffee grounds ---------------- */}
                             <CoffeeGrounds />
 
