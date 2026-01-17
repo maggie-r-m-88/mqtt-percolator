@@ -111,7 +111,7 @@ export default function Moka3D({
 
 
     // Calculate water level position and height
-    const waterRatio = Math.max(0, Math.min(1, waterVolume / 100));
+    const waterRatio = waterVolume !== null ? Math.max(0, Math.min(1, waterVolume / 100)) : 0;
 
     const WATER_HEIGHT_MIN = 0.01;
     const WATER_HEIGHT_MAX = 0.57;
@@ -147,7 +147,7 @@ export default function Moka3D({
             <OrbitControls />
 
             {/* Automatically center and scale the pot */}
-            <Bounds fit clip damping={6}>
+            <Bounds fit clip>
                 <Center>
                     <group scale={1.5}>
 
