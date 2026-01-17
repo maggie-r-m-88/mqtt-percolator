@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import { Client, Message } from "paho-mqtt";
 
-type MokaState = "heating" | "brewing" | "finished";
+type MokaState = "heating" | "brewing" | "finished" | "idle";
 
 type Props = {
   temperature: number | null;

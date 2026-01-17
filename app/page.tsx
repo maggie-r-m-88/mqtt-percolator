@@ -5,7 +5,7 @@ import { Client, Message } from "paho-mqtt";
 import MokaController from "./components/MokaController";
 import Moka3D from "./components/Mokda3d";
 
-type MokaState = "heating" | "brewing" | "finished";
+type MokaState = "heating" | "brewing" | "finished" | "idle";
 
 export default function Home() {
   // ---- Lifted state ----
@@ -25,10 +25,11 @@ export default function Home() {
       {/* 3D Moka Pot */}
       <main className="flex justify-center items-center h-full">
         <Moka3D
-  coffeeVolume={coffeeVolume ?? 0}
-  waterVolume={temperature && pressure ? Math.min(coffeeVolume ?? 0, 100) : 0}
-  coffeeGroundsHeight={0.2}
-/>
+          temperature={temperature}
+          pressure={pressure}
+          coffeeVolume={coffeeVolume}
+          state={state}
+        />
 
       </main>
 

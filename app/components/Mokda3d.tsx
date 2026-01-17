@@ -6,6 +6,14 @@ import { useEffect } from "react";
 import { useTexture } from "@react-three/drei";
 import * as THREE from "three";
 
+type MokaState = "heating" | "brewing" | "finished" | "idle";
+
+type Moka3DProps = {
+    temperature: number | null;
+    pressure: number | null;
+    coffeeVolume: number | null;
+    state: MokaState | null;
+};
 
 
 function MokaPotTransparent() {
@@ -26,102 +34,114 @@ function MokaPotTransparent() {
 
     const coffeeTexture = useTexture("/coffee-ground.webp");
 
-useEffect(() => {
-  coffeeTexture.wrapS = coffeeTexture.wrapT = THREE.RepeatWrapping;
-  coffeeTexture.repeat.set(2, 1); // repeat around the cylinder
-}, [coffeeTexture]);
+    useEffect(() => {
+        coffeeTexture.wrapS = coffeeTexture.wrapT = THREE.RepeatWrapping;
+        coffeeTexture.repeat.set(2, 1); // repeat around the cylinder
+    }, [coffeeTexture]);
 
 
     return <primitive object={gltf.scene} />;
 }
 
 function CoffeeGrounds() {
-  const texture = useTexture("/coffee-ground.webp");
+    const texture = useTexture("/coffee-ground.webp");
 
-  useEffect(() => {
-    texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+    useEffect(() => {
+        texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
 
-    // X = around circumference
-    // Y = vertical tiling
-    texture.repeat.set(6, 2);
-  }, [texture]);
+        // X = around circumference
+        // Y = vertical tiling
+        texture.repeat.set(6, 2);
+    }, [texture]);
 
-  return (
-    <mesh position={[0, 0.48, 0]}>
-      <cylinderGeometry args={[0.36, 0.36, 0.2, 32]} />
-      <meshStandardMaterial
-        map={texture}
-        roughness={0.95}
-        metalness={0}
-      />
-    </mesh>
-  );
+    return (
+        <mesh position={[0, 0.48, 0]}>
+            <cylinderGeometry args={[0.36, 0.36, 0.2, 32]} />
+            <meshStandardMaterial
+                map={texture}
+                roughness={0.95}
+                metalness={0}
+            />
+        </mesh>
+    );
 }
 
 function BrewedCoffee() {
-  const texture = useTexture("/coffee-ground.webp");
+    const texture = useTexture("/coffee-ground.webp");
 
-  useEffect(() => {
-    texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-    texture.repeat.set(4, 2);
-  }, [texture]);
+    useEffect(() => {
+        texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+        texture.repeat.set(4, 2);
+    }, [texture]);
 
-  // Profile points (Y = height, X = radius)
-  const points = [
-    new THREE.Vector2(0.42, 0.0),   // bottom
-    new THREE.Vector2(0.46, 0.35),  // mid body
-    new THREE.Vector2(0.50, 0.48),  // wider near top
-    new THREE.Vector2(0.40, 0.55),  // slope inward toward spout
-  ];
+    // Profile points (Y = height, X = radius)
+    const points = [
+        new THREE.Vector2(0.42, 0.0),   // bottom
+        new THREE.Vector2(0.46, 0.35),  // mid body
+        new THREE.Vector2(0.50, 0.48),  // wider near top
+        new THREE.Vector2(0.40, 0.55),  // slope inward toward spout
+    ];
 
-  return (
-    <mesh position={[0, 0.85, 0]}>
-      <latheGeometry args={[points, 64]} />
-      <meshStandardMaterial
-        map={texture}
-        transparent
-        opacity={0.65}
-        roughness={0.4}
-        metalness={0}
-        side={THREE.DoubleSide}
-      />
-    </mesh>
-  );
+    return (
+        <mesh position={[0, 0.85, 0]}>
+            <latheGeometry args={[points, 64]} />
+            <meshStandardMaterial
+                map={texture}
+                transparent
+                opacity={0.65}
+                roughness={0.4}
+                metalness={0}
+                side={THREE.DoubleSide}
+            />
+        </mesh>
+    );
 }
 function TableTop() {
-  return (
-    <mesh position={[0, -.37, 0]}>
-      {/* args: [width, height, depth] */}
-      <boxGeometry args={[3, 0.05, 3]} />
-      <meshStandardMaterial
-        color="#222"        // dark tabletop
-        metalness={0.2}     // slightly metallic
-        roughness={0.6}     // not shiny
-      />
-    </mesh>
-  );
+    return (
+        <mesh position={[0, -.37, 0]}>
+            {/* args: [width, height, depth] */}
+            <boxGeometry args={[3, 0.05, 3]} />
+            <meshStandardMaterial
+                color="#222"        // dark tabletop
+                metalness={0.2}     // slightly metallic
+                roughness={0.6}     // not shiny
+            />
+        </mesh>
+    );
 }
 
 function WarmerRing() {
-  return (
-    <mesh position={[0, -0.35, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-      {/* Torus: args = [radius, tube thickness, radial segments, tubular segments] */}
-      <torusGeometry args={[0.5, 0.05, 16, 100]} />
-      <meshStandardMaterial
-        color="#ff6600"
-        metalness={0.6}
-        roughness={0.4}
-        emissive="#ff3300"
-        emissiveIntensity={0.3} // slightly glowing
-      />
-    </mesh>
-  );
+    return (
+        <mesh position={[0, -0.35, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+            {/* Torus: args = [radius, tube thickness, radial segments, tubular segments] */}
+            <torusGeometry args={[0.5, 0.05, 16, 100]} />
+            <meshStandardMaterial
+                color="#ff6600"
+                metalness={0.6}
+                roughness={0.4}
+                emissive="#ff3300"
+                emissiveIntensity={0.3} // slightly glowing
+            />
+        </mesh>
+    );
 }
 
+export default function Moka3D({
+    temperature,
+    pressure,
+    coffeeVolume,
+    state,
+}: Moka3DProps) {
+    // Console log whenever props update
+    useEffect(() => {
+        console.log("🔥 Moka3D Props Updated:", {
+            temperature,
+            pressure,
+            coffeeVolume,
+            state,
+        });
+    }, [temperature, pressure, coffeeVolume, state]);
 
-
-
-export default function Moka3D() {
     return (
         <Canvas camera={{ position: [3, 2, 5], fov: 50 }}>
             {/* Lighting */}
@@ -136,7 +156,7 @@ export default function Moka3D() {
                 <Center>
                     <group scale={1.5}>
 
-                   
+
                         {/* Your transparent GLB pot */}
                         <MokaPotTransparent />
 
@@ -175,22 +195,22 @@ export default function Moka3D() {
 
                             {/* ---------------- Finished coffee (MAX level) ---------------- */}
                             <mesh position={[0, .86, 0]}>
-                            {/* top wider than bottom */}
-                            <cylinderGeometry args={[0.48, 0.40, 0.61, 32]} />
-                            <meshStandardMaterial
-                                color="#3b2415"
-                                transparent
-                                opacity={0.6}
-                                roughness={0.4}
-                                metalness={0}
-                            />
+                                {/* top wider than bottom */}
+                                <cylinderGeometry args={[0.48, 0.40, 0.61, 32]} />
+                                <meshStandardMaterial
+                                    color="#3b2415"
+                                    transparent
+                                    opacity={0.6}
+                                    roughness={0.4}
+                                    metalness={0}
+                                />
                             </mesh>
                             {/* ---------------- Coffee grounds ---------------- */}
-                            <CoffeeGrounds />  
+                            <CoffeeGrounds />
 
                             <WarmerRing />
 
-                            <TableTop /> 
+                            <TableTop />
                         </group>
                     </group>
                 </Center>
