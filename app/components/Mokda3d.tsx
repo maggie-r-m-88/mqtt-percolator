@@ -66,36 +66,7 @@ function CoffeeGrounds() {
     );
 }
 
-function BrewedCoffee() {
-    const texture = useTexture("/coffee-ground.webp");
 
-    useEffect(() => {
-        texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-        texture.repeat.set(4, 2);
-    }, [texture]);
-
-    // Profile points (Y = height, X = radius)
-    const points = [
-        new THREE.Vector2(0.42, 0.0),   // bottom
-        new THREE.Vector2(0.46, 0.35),  // mid body
-        new THREE.Vector2(0.50, 0.48),  // wider near top
-        new THREE.Vector2(0.40, 0.55),  // slope inward toward spout
-    ];
-
-    return (
-        <mesh position={[0, 0.85, 0]}>
-            <latheGeometry args={[points, 64]} />
-            <meshStandardMaterial
-                map={texture}
-                transparent
-                opacity={0.65}
-                roughness={0.4}
-                metalness={0}
-                side={THREE.DoubleSide}
-            />
-        </mesh>
-    );
-}
 function TableTop() {
     return (
         <mesh position={[0, -.37, 0]}>
@@ -184,8 +155,10 @@ export default function Moka3D({
                             </mesh>
 
                             {/* ---------------- Static water level (funnel-shaped) ---------------- */}
-                            <mesh position={[0, -0.02, 0]}>
-                                <cylinderGeometry args={[0.38, 0.47, 0.57, 32]} />
+                            <mesh position={[0, -0.32, 0]}>{/* BEGIN LEVEL */}
+                            {/* <mesh position={[0, -0.02, 0]}> */}{/* FULL LEVEL */}
+                                <cylinderGeometry args={[0.41, 0.47, 0.01, 32]} />{/* FULL LEVEL */}
+                                {/* <cylinderGeometry args={[0.41, 0.47, 0.57, 32]} /> */}{/* BEGIN LEVEL */}
                                 <meshStandardMaterial
                                     color="lightblue"
                                     transparent
@@ -194,9 +167,11 @@ export default function Moka3D({
                             </mesh>
 
                             {/* ---------------- Finished coffee (MAX level) ---------------- */}
-                            <mesh position={[0, .86, 0]}>
+                            {/*<mesh position={[0, .86, 0]}>*}{/* FULL LEVEL */}
+                            <mesh position={[0, 0.59, 0]}>{/* BEGIN LEVEL */}
                                 {/* top wider than bottom */}
-                                <cylinderGeometry args={[0.48, 0.40, 0.61, 32]} />
+                                {/* <cylinderGeometry args={[0.48, 0.40, 0.61, 32]} />  */}{/* FULL LEVEL */}
+                                <cylinderGeometry args={[0.01, .40, 0.01, 32]} />{/* BEGIN LEVEL */}
                                 <meshStandardMaterial
                                     color="#3b2415"
                                     transparent
