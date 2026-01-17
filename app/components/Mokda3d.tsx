@@ -23,7 +23,7 @@ type MokaPotTransparentProps = {
 };
 
 function MokaPotTransparent({ state }: MokaPotTransparentProps) {
-  const gltf = useGLTF("/italian_coffee_machine_moka.glb");
+  const gltf = useGLTF("/italian_coffee_machine_moka-compressed.glb");
 
   useEffect(() => {
     gltf.scene.traverse((child: any) => {
@@ -34,9 +34,9 @@ function MokaPotTransparent({ state }: MokaPotTransparentProps) {
 
         // Adjust opacity based on state
         if (state === "idle") {
-          child.material.opacity = 0.75; // more opaque when idle
+          child.material.opacity = 0.55; // more opaque when idle
         } else {
-          child.material.opacity = 0.25; // more transparent when active
+          child.material.opacity = 0.15; // more transparent when active
         }
 
         child.material.depthWrite = false;
@@ -138,7 +138,7 @@ export default function Moka3D({
 
 
     return (
-        <Canvas camera={{ position: [3, 2, 5], fov: 50 }}>
+        <Canvas camera={{ position: [3, 2, 5], fov: 30 }}>
             {/* Lighting */}
             <ambientLight intensity={0.5} />
             <directionalLight position={[5, 5, 5]} intensity={1} />
@@ -154,6 +154,7 @@ export default function Moka3D({
 
                         {/* Your transparent GLB pot */}
                         <MokaPotTransparent state={state} />
+
 
                         <group position={[-0.20, -0.65, 0]}>
                             {/* Funnel base */}
