@@ -32,10 +32,18 @@ export default function MokaController({
   const PASSWORD = process.env.NEXT_PUBLIC_HIVEMQ_PASSWORD!;
   const WSS_URL = process.env.NEXT_PUBLIC_HIVEMQ_BROKER_URL!;
 
+  // Parse WebSocket URL for paho-mqtt Client constructor
+  // WSS_URL format: "wss://host:port/path"
+  const url = new URL(WSS_URL);
+  const BROKER_HOST = url.hostname;
+  const BROKER_PORT = parseInt(url.port);
+  const BROKER_PATH = url.pathname;
+
   useEffect(() => {
     if (clientRef.current) return;
 
-    const client = new Client(WSS_URL, CLIENT_ID);
+    // Paho Client constructor: (host, port, path, clientId)
+    const client = new Client(BROKER_HOST, BROKER_PORT, BROKER_PATH, CLIENT_ID);
     clientRef.current = client;
 
     client.onMessageArrived = (msg: Message) => {
@@ -68,12 +76,17 @@ export default function MokaController({
       password: PASSWORD,
       cleanSession: false,
       onSuccess: () => {
-        console.log("✅ MQTT connected");
+        console.log("✅ MQTT connected to HiveMQ");
         setDisconnected(false);
         if (!subscribedRef.current) {
           client.subscribe("moka/#", { qos: 1 });
           subscribedRef.current = true;
+          console.log("📡 Subscribed to moka/#");
         }
+      },
+      onFailure: (err) => {
+        console.error("❌ MQTT connection failed:", err);
+        setDisconnected(true);
       },
     });
 

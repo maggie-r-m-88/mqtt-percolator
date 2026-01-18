@@ -1,20 +1,22 @@
 export const runtime = "nodejs";
 
 import { NextResponse } from "next/server";
-import { stopSimulation } from "../../../lib/mokaSimulator";
+import { stopSimulation as stopBackendSimulation } from "../../../lib/mokaSimulator";
+import { stopSimulation as stopFrontendSimulation } from "../../../lib/frontendSimulator";
 
 export async function GET() {
   const useBackendSimulator = process.env.USE_BACKEND_SIMULATOR === "true";
 
   if (!useBackendSimulator) {
-    return NextResponse.json(
-      { error: "Backend simulator not enabled. Use frontend controls instead." },
-      { status: 400 }
-    );
+    // Frontend mode: stop simulation on Next.js server
+    console.log("🛑 /api/stop (frontend mode)");
+    stopFrontendSimulation();
+    return NextResponse.json({ status: "stopped (frontend mode)" });
   }
 
-  console.log("🛑 /api/stop endpoint called");
-  stopSimulation();
+  // Backend mode: call the backend simulation function directly
+  console.log("🛑 /api/stop endpoint called (backend mode)");
+  stopBackendSimulation();
   console.log("🛑 /api/stop returning response");
-  return NextResponse.json({ status: "stopped" });
+  return NextResponse.json({ status: "stopped (backend mode)" });
 }
