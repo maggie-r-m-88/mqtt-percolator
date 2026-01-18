@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
-import { resetSimulation } from "../../../lib/mokaSimulator";
-
-export const runtime = "nodejs";
+import { getMqttClient } from "../../../lib/mqttClient";
 
 export async function GET() {
-  console.log("🔄 /api/reset endpoint called");
-  resetSimulation();
-  console.log("🔄 /api/reset returning response");
-  return NextResponse.json({ status: "reset" });
+  const client = getMqttClient();
+
+  console.log("🔄 /api/reset called");
+
+  client.publish("moka/control", "reset", { qos: 1, retain: false });
+
+  return NextResponse.json({ status: "reset command sent" });
 }
