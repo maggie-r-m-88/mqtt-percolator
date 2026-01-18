@@ -1,12 +1,20 @@
+export const runtime = "nodejs";
+
 import { NextResponse } from "next/server";
-import { getMqttClient } from "../../../lib/mqttClient";
+import { stopSimulation } from "../../../lib/mokaSimulator";
 
 export async function GET() {
-  const client = getMqttClient();
+  const useBackendSimulator = process.env.USE_BACKEND_SIMULATOR === "true";
 
-  console.log("⏹️ /api/stop called");
+  if (!useBackendSimulator) {
+    return NextResponse.json(
+      { error: "Backend simulator not enabled. Use frontend controls instead." },
+      { status: 400 }
+    );
+  }
 
-  client.publish("moka/control", "stop", { qos: 1, retain: false });
-
-  return NextResponse.json({ status: "stop command sent" });
+  console.log("🛑 /api/stop endpoint called");
+  stopSimulation();
+  console.log("🛑 /api/stop returning response");
+  return NextResponse.json({ status: "stopped" });
 }
