@@ -1,8 +1,22 @@
 "use client";
 
 import { useRef, useMemo } from "react";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useThree, extend } from "@react-three/fiber";
 import * as THREE from "three";
+import { Water } from "three-stdlib";
+import { TextureLoader } from "three";
+
+// Extend three-fiber so <water /> works
+extend({ Water });
+
+// --- TypeScript fix for <water /> JSX ---
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      water: any;
+    }
+  }
+}
 
 type AnimatedWaterProps = {
   waterVolume: number | null;
@@ -10,46 +24,56 @@ type AnimatedWaterProps = {
 };
 
 export default function AnimatedWater({ waterVolume, state }: AnimatedWaterProps) {
-  
-  const meshRef = useRef<THREE.Mesh>(null);
+  const waterRef = useRef<any>(null);
+  const gl = useThree((s) => s.gl);
 
-  // Water only animates if there's volume and not idle
   const isActive = waterVolume !== null && state !== "idle";
 
-  // Compute water ratio and geometry
+  // Water ratio for height
   const waterRatio = waterVolume !== null ? Math.max(0, Math.min(1, waterVolume / 100)) : 0;
-
   const WATER_HEIGHT_MIN = 0.0;
   const WATER_HEIGHT_MAX = 0.57;
   const WATER_Y_START = -0.02;
   const WATER_Y_END = -0.32;
-
   const waterHeight = WATER_HEIGHT_MIN + waterRatio * (WATER_HEIGHT_MAX - WATER_HEIGHT_MIN);
   const waterY = WATER_Y_END + waterRatio * (WATER_Y_START - WATER_Y_END);
 
-  const meshColor = ( state == "finished") ? "#333" : "#8fd3ff";
+  const waterColor = state === "finished" ? "#333333" : "#8fd3ff";
 
-  // Subtle animated "sloshing" effect
-  useFrame((stateFrame) => {
-    if (!meshRef.current || !isActive) return;
+  // Water normals
+  const waterNormals = useMemo(() => new TextureLoader().load("/waternormals.jpeg"), []);
+  waterNormals.wrapS = waterNormals.wrapT = THREE.RepeatWrapping;
 
-    const time = stateFrame.clock.getElapsedTime();
-    meshRef.current.position.y = waterY + Math.sin(time * 1.0) * 0.005; // slower movement
+  const waterConfig = useMemo(
+    () => ({
+      textureWidth: 256, // lower res is fine
+      textureHeight: 256,
+      waterNormals,
+      sunDirection: new THREE.Vector3(0, 1, 0),
+      sunColor: 0xffffff,
+      waterColor: new THREE.Color(waterColor),
+      distortionScale: 0.01, // subtle ripples
+      fog: false,
+      format: gl.encoding,
+    }),
+    [waterNormals, waterColor, gl]
+  );
+
+  // Animate water time slowly
+  useFrame((state, delta) => {
+    if (waterRef.current) {
+      waterRef.current.material.uniforms.time.value += delta * 0.1; // slow down
+    }
   });
 
   if (!isActive) return null;
 
   return (
-    <mesh ref={meshRef} position={[0, waterY, 0]}>
-      <cylinderGeometry args={[0.41, 0.47, waterHeight, 32]} />
-      <meshStandardMaterial
-        color={meshColor}
-        //transparent
-        opacity={0.65}
-        roughness={0.05}
-        metalness={0.1}
-        envMapIntensity={1}
+    <group position={[0, waterY, 0]}>
+      <water
+        ref={waterRef}
+        args={[new THREE.CylinderGeometry(0.41, 0.47, waterHeight, 32), waterConfig]}
       />
-    </mesh>
+    </group>
   );
 }

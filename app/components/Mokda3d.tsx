@@ -10,6 +10,7 @@ import CoffeeGrounds from "./CoffeeGrounds";
 import TableTop from "./TableTop";
 import Steam from "./Steam";
 import Water from "./Water";
+import CoffeeStream from "./CoffeeStream";
 
 
 type MokaState = "heating" | "brewing" | "finished" | "idle";
@@ -110,23 +111,30 @@ export default function Moka3D({
                                 />
                             </mesh>
 
-
-
                             {/* Short top cylinder (spout) */}
                             <mesh position={[0, 0.45, 0]}>
                                 <cylinderGeometry args={[0.38, 0.38, 0.2, 32]} />
                                 <meshStandardMaterial
                                     color="gray"
-                                    transparent
-                                    opacity={0.2}
-                                    depthWrite={false}
+
+                                    opacity={.2}        // fully opaque
+                                    transparent={true} // ensure material is not transparent
+                                    depthWrite={true}  // allow depth buffer to render correctly
                                 />
                             </mesh>
+
+                            {/* Coffee Stream */}
+{/*                             <CoffeeStream
+                                brewing={state === "brewing"} // or true if you want to test always
+                                coffeeRatio={coffeeRatio}
+                                position={[0, 0.8, 0]}
+                            /> */}
 
                             {/* ---------------- Dynamic water level ---------------- */}
                             <Water waterVolume={waterVolume} state={state} />
 
 
+                            {/* ---------------- Finished coffee ---------------- */}
                             {/* ---------------- Finished coffee ---------------- */}
                             {coffeeVolume !== null && state !== "idle" && (
                                 <mesh position={[0, coffeeY, 0]}>
@@ -137,15 +145,16 @@ export default function Moka3D({
                                             new THREE.Color("#2a1409"), // deep espresso
                                             coffeeRatio
                                         )}
-                                        transparent
-                                        opacity={0.75}
-                                        roughness={0.15}
-                                        metalness={0.05}
-                                        emissive="#2a1409"
-                                        emissiveIntensity={0.1 + coffeeRatio * 0.15}
+
+                                        opacity={0.9}               // nearly opaque like liquid
+                                        roughness={0.2}             // slight reflection
+                                        metalness={0.05}            // subtle metallic sheen
+                                        emissive="#2a1409"          // warm coffee glow
+                                        emissiveIntensity={0.05 + coffeeRatio * 0.1} // subtle emissive effect
                                     />
                                 </mesh>
                             )}
+
 
                             {/* ---------------- Coffee grounds ---------------- */}
                             <CoffeeGrounds />
