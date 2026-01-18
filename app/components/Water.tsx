@@ -6,10 +6,10 @@ import * as THREE from "three";
 import { Water } from "three-stdlib";
 import { TextureLoader } from "three";
 
-// Extend three-fiber so <water /> works
+// Extend R3F to recognize <water />
 extend({ Water });
 
-// --- TypeScript fix for <water /> JSX ---
+// TypeScript fix
 declare global {
   namespace JSX {
     interface IntrinsicElements {
@@ -38,15 +38,17 @@ export default function AnimatedWater({ waterVolume, state }: AnimatedWaterProps
   const waterHeight = WATER_HEIGHT_MIN + waterRatio * (WATER_HEIGHT_MAX - WATER_HEIGHT_MIN);
   const waterY = WATER_Y_END + waterRatio * (WATER_Y_START - WATER_Y_END);
 
+  // Change color if finished
   const waterColor = state === "finished" ? "#333333" : "#8fd3ff";
 
-  // Water normals
+  // Water normals texture
   const waterNormals = useMemo(() => new TextureLoader().load("/waternormals.jpeg"), []);
   waterNormals.wrapS = waterNormals.wrapT = THREE.RepeatWrapping;
 
+  // Config for three-stdlib Water
   const waterConfig = useMemo(
     () => ({
-      textureWidth: 256, // lower res is fine
+      textureWidth: 256,
       textureHeight: 256,
       waterNormals,
       sunDirection: new THREE.Vector3(0, 1, 0),
@@ -59,10 +61,10 @@ export default function AnimatedWater({ waterVolume, state }: AnimatedWaterProps
     [waterNormals, waterColor, gl]
   );
 
-  // Animate water time slowly
+  // Animate subtle ripples
   useFrame((state, delta) => {
     if (waterRef.current) {
-      waterRef.current.material.uniforms.time.value += delta * 0.1; // slow down
+      waterRef.current.material.uniforms.time.value += delta * 0.05; // slow
     }
   });
 

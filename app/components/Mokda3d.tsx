@@ -10,7 +10,8 @@ import CoffeeGrounds from "./CoffeeGrounds";
 import TableTop from "./TableTop";
 import Steam from "./Steam";
 import Water from "./Water";
-import CoffeeStream from "./CoffeeStream";
+import FinishedCoffee from "./Coffee";
+import WaterSteam from "./WaterSteam";
 
 
 type MokaState = "heating" | "brewing" | "finished" | "idle";
@@ -95,7 +96,6 @@ export default function Moka3D({
                             <Steam active={state === "finished"} />
                         </group>
 
-
                         {/* Your transparent GLB pot */}
                         <MokaPotTransparent state={state} />
 
@@ -133,29 +133,21 @@ export default function Moka3D({
                             {/* ---------------- Dynamic water level ---------------- */}
                             <Water waterVolume={waterVolume} state={state} />
 
+                            <WaterSteam
+waterY={waterY}
+  active={state === "brewing"}
+   temperature={temperature}
+   waterVolume={waterVolume}
+/>
+
 
                             {/* ---------------- Finished coffee ---------------- */}
-                            {/* ---------------- Finished coffee ---------------- */}
-                            {coffeeVolume !== null && state !== "idle" && (
-                                <mesh position={[0, coffeeY, 0]}>
-                                    <cylinderGeometry args={[coffeeTopRadius, coffeeBottomRadius, coffeeHeight, 32]} />
-                                    <meshStandardMaterial
-                                        color={new THREE.Color().lerpColors(
-                                            new THREE.Color("#caa472"), // lighter crema-like start
-                                            new THREE.Color("#2a1409"), // deep espresso
-                                            coffeeRatio
-                                        )}
-
-                                        opacity={0.9}               // nearly opaque like liquid
-                                        roughness={0.2}             // slight reflection
-                                        metalness={0.05}            // subtle metallic sheen
-                                        emissive="#2a1409"          // warm coffee glow
-                                        emissiveIntensity={0.05 + coffeeRatio * 0.1} // subtle emissive effect
-                                    />
-                                </mesh>
-                            )}
-
-
+                            {coffeeVolume !== null && state !== "heating" && (
+                            <FinishedCoffee 
+                                coffeeVolume={coffeeVolume}
+                                state={state}
+                                />
+                                )}
                             {/* ---------------- Coffee grounds ---------------- */}
                             <CoffeeGrounds />
 
