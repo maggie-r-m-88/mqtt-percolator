@@ -14,15 +14,19 @@ export default function Steam({ active }: SteamProps) {
   const particleCount = 700; // increased for denser burst
   const texture = useLoader(THREE.TextureLoader, "/smoke.png");
 
-  // Particle positions
-  const positions = useMemo(() => {
-    const arr = new Float32Array(particleCount * 3);
+  // Create geometry with positions
+  const geometry = useMemo(() => {
+    const geo = new THREE.BufferGeometry();
+    const positions = new Float32Array(particleCount * 3);
+
     for (let i = 0; i < particleCount; i++) {
-      arr[i * 3 + 0] = (Math.random() - 0.5) * 0.12;  // wider x spread
-      arr[i * 3 + 1] = Math.random() * 0.25;          // varied starting y
-      arr[i * 3 + 2] = (Math.random() - 0.5) * 0.12;  // wider z spread
+      positions[i * 3 + 0] = (Math.random() - 0.5) * 0.12;  // wider x spread
+      positions[i * 3 + 1] = Math.random() * 0.25;          // varied starting y
+      positions[i * 3 + 2] = (Math.random() - 0.5) * 0.12;  // wider z spread
     }
-    return arr;
+
+    geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    return geo;
   }, []);
 
   useFrame((_, delta) => {
@@ -48,15 +52,7 @@ export default function Steam({ active }: SteamProps) {
   if (!active) return null;
 
   return (
-    <points ref={pointsRef} position={[0, 0.92, 0]}>
-      <bufferGeometry>
-        <bufferAttribute
-          attach="attributes-position"
-          count={particleCount}
-          array={positions}
-          itemSize={3}
-        />
-      </bufferGeometry>
+    <points ref={pointsRef} position={[0, 0.92, 0]} geometry={geometry}>
       <pointsMaterial
         map={texture}
         size={0.06}
