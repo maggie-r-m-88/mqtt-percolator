@@ -74,7 +74,7 @@ export default function Moka3D({
 
 
     return (
-        <Canvas camera={{ position: [3, 2, 5], fov: 30 }} className="background">
+        <Canvas camera={{ position: [3, 2, 5], fov: 30 }} >
             {/* Lighting */}
             <ambientLight intensity={0.5} />
             <directionalLight position={[5, 5, 5]} intensity={1} />

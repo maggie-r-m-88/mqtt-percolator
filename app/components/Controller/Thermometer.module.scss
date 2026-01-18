@@ -1,0 +1,81 @@
+$therm-width: 20px;
+$bulb-size: 40px;
+
+.centered {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.tg-thermometer {
+  width: $therm-width * 3;
+  position: relative;
+  height: 100%;
+
+  .meter {
+    position: relative;
+    width: $therm-width;
+    height: 100%;
+    margin: auto;
+    border-radius: $therm-width / 2;
+    background-color: #d6d6d6;
+
+    .mask {
+      position: absolute;
+      bottom: $bulb-size / 2; // leave space for bulb
+      left: 0;
+      width: 100%;
+      height: calc(100% - #{$bulb-size / 2});
+      overflow: hidden;
+      border-radius: $therm-width / 2;
+
+      .mercury {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        border-radius: $therm-width / 2;
+        transition: height 0.5s ease-in-out, background-color 0.3s;
+      }
+    }
+
+    .bulb {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: $bulb-size;
+      height: $bulb-size;
+      border-radius: 50%;
+      box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .labels {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+
+      .tick {
+        position: absolute;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.8em;
+        transform: translateY(50%);
+
+        .fahrenheit {
+          margin-left: -50px;
+          text-align: left;
+          color: #555;
+        }
+
+        .celsius {
+          margin-right: -50px;
+          text-align: right;
+          color: #333;
+        }
+      }
+    }
+  }
+}

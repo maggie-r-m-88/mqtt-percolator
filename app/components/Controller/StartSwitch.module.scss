@@ -1,0 +1,169 @@
+$color: #ff1818; // Change to green, amber, etc.
+$rotation: 25deg;
+$pivot-distance: 20px;
+$width: 90px;
+$height: 1.3 * $width;
+
+.switch {
+  background-color: black;
+  width: $width;
+  height: $height;
+  box-shadow:
+    0 0 10px 2px rgba(black, 0.2),
+    0 0 1px 2px black,
+    inset 0 2px 2px -2px white,
+    inset 0 0 2px 15px #47434c,
+    inset 0 0 2px 22px black;
+  border-radius: 5px;
+  padding: 20px;
+  perspective: 700px;
+  display: inline-block;
+
+  input {
+    display: none;
+
+    &:checked + .button {
+      transform: translateZ($pivot-distance) rotateX($rotation);
+      box-shadow: 0 -10px 20px $color;
+
+      .light {
+        animation: flicker 0.2s infinite 0.3s;
+        opacity: 1;
+      }
+
+      .shine {
+        opacity: 1;
+      }
+
+      .shadow {
+        opacity: 0;
+      }
+    }
+  }
+
+  .button {
+    transition: all 0.3s cubic-bezier(1, 0, 1, 1);
+    transform-origin: center center -#{$pivot-distance};
+    transform: translateZ($pivot-distance) rotateX(-$rotation);
+    transform-style: preserve-3d;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    cursor: pointer;
+    background: linear-gradient(
+      darken($color, 25%) 0%,
+      darken($color, 33%) 30%,
+      darken($color, 33%) 70%,
+      darken($color, 25%) 100%
+    );
+
+    &::before {
+      content: "";
+      background:
+        linear-gradient(
+          rgba(white, 0.8) 10%,
+          rgba(white, 0.3) 30%,
+          darken($color, 35%) 75%,
+          darken($color, 45%)
+        ) 50% 50% / 97% 97%,
+        darken($color, 20%);
+      width: 100%;
+      height: 50px;
+      transform-origin: top;
+      transform: rotateX(-90deg);
+      position: absolute;
+      top: 0;
+    }
+
+    &::after {
+      content: "";
+      background-image: linear-gradient(
+        darken($color, 35%),
+        darken($color, 45%)
+      );
+      width: 100%;
+      height: 50px;
+      transform-origin: top;
+      transform: translateY(50px) rotateX(-90deg);
+      position: absolute;
+      bottom: 0;
+      box-shadow:
+        0 50px 8px black,
+        0 80px 20px rgba(black, 0.5);
+    }
+  }
+
+  .light {
+    opacity: 0;
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(
+      adjust-hue(lighten($color, 20%), 35),
+      $color 40%,
+      transparent 70%
+    );
+  }
+
+  .dots {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(
+      transparent 30%,
+      rgba(darken($color, 35%), 0.7) 70%
+    );
+    background-size: 10px 10px;
+  }
+
+  .characters {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(white, white) 50% 20% / 5% 20%,
+      radial-gradient(
+        circle,
+        transparent 50%,
+        white 52%,
+        white 70%,
+        transparent 72%
+      ) 50% 80% / 33% 25%;
+    background-repeat: no-repeat;
+  }
+
+  .shine {
+    transition: all 0.3s cubic-bezier(1, 0, 1, 1);
+    opacity: 0.3;
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(white, transparent 3%) 50% 50% / 97% 97%,
+      linear-gradient(
+        rgba(white, 0.5),
+        transparent 50%,
+        transparent 80%,
+        rgba(white, 0.5)
+      ) 50% 50% / 97% 97%;
+    background-repeat: no-repeat;
+  }
+
+  .shadow {
+    transition: all 0.3s cubic-bezier(1, 0, 1, 1);
+    opacity: 1;
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      transparent 70%,
+      rgba(black, 0.8)
+    );
+  }
+
+  &.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+}
+
+@keyframes flicker {
+  0% { opacity: 1; }
+  80% { opacity: 0.8; }
+  100% { opacity: 1; }
+}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import MokaController from "./components/MokaController";
+import MokaController from "./components/Controller/MokaController";
 import Moka3D from "./components/Mokda3d";
 
 export type MokaState = "heating" | "brewing" | "finished" | "idle";
@@ -14,11 +14,9 @@ export default function Home() {
   const [coffeeVolume, setCoffeeVolume] = useState<number | null>(null);
   const [state, setState] = useState<MokaState | null>(null);
 
-  // ✅ Derive water volume from coffee volume
   const waterVolume =
     coffeeVolume !== null ? Math.max(0, MAX_WATER - coffeeVolume) : 0;
 
-  // 🔎 Log lifted + derived state
   useEffect(() => {
     console.log("🏠 Home state update:", {
       temperature,
@@ -29,34 +27,42 @@ export default function Home() {
     });
   }, [temperature, pressure, coffeeVolume, waterVolume, state]);
 
+  // Toggle this to use static demo values for testing
+  const USE_DEMO_VALUES = true;
+
+  const demoTemperature = 75;
+  const demoPressure = 1.2;
+  const demoCoffeeVolume = 0;
+  const demoState: MokaState = "brewing";
+  const demoWaterVolume = MAX_WATER - demoCoffeeVolume;
+
   return (
-    <div className="relative h-screen w-screen bg-gray-50">
-      <header className="p-4 text-center">
-        <h1 className="text-2xl font-bold">Moka Simulator</h1>
-      </header>
-
-      <main className="flex justify-center items-center h-full">
+    <div className="relative h-screen w-screen background">
+      {/* Main container: Moka3D fills, control panel floats */}
+      <div className="relative flex justify-center items-center h-full w-full">
+        {/* Centered 3D Moka */}
         <Moka3D
-          temperature={temperature}
-          pressure={pressure}
-          coffeeVolume={coffeeVolume ?? 0}
-          waterVolume={waterVolume}
-          state={state}
+          temperature={USE_DEMO_VALUES ? demoTemperature : (temperature ?? 20)}
+          pressure={USE_DEMO_VALUES ? demoPressure : (pressure ?? 0)}
+          coffeeVolume={USE_DEMO_VALUES ? demoCoffeeVolume : (coffeeVolume ?? 0)}
+          waterVolume={USE_DEMO_VALUES ? demoWaterVolume : waterVolume}
+          state={USE_DEMO_VALUES ? demoState : state}
         />
-      </main>
 
-      <footer className="absolute top-0 left-0 w-full p-4 bg-white shadow-md">
-        <MokaController
-          temperature={temperature}
-          pressure={pressure}
-          coffeeVolume={coffeeVolume}
-          state={state}
-          setTemperature={setTemperature}
-          setPressure={setPressure}
-          setCoffeeVolume={setCoffeeVolume}
-          setState={setState}
-        />
-      </footer>
+        {/* Floating control panel - top-left of this container */}
+        <div className="absolute top-4 left-4 z-50">
+          <MokaController
+            temperature={temperature}
+            pressure={pressure}
+            coffeeVolume={coffeeVolume}
+            state={state}
+            setTemperature={setTemperature}
+            setPressure={setPressure}
+            setCoffeeVolume={setCoffeeVolume}
+            setState={setState}
+          />
+        </div>
+      </div>
     </div>
   );
 }
