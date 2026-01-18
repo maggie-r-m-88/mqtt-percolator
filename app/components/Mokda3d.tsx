@@ -125,9 +125,9 @@ export default function Moka3D({
                             </mesh>
 
                             <CoffeeStream
-                                brewing={true}
+                                brewing={state === "brewing"}
                                 coffeeRatio={coffeeRatio}
-                                position={[0, 1.1, 0]} // adjust to spout exit
+                                position={[0, 1.15, 0]} // adjust to spout exit
                             />
 
                             {/* ---------------- Dynamic water level ---------------- */}
@@ -141,14 +141,13 @@ export default function Moka3D({
                                 active={state === "heating" || state === "brewing"}
                             />
 
-
                             {/* ---------------- Finished coffee ---------------- */}
                             {coffeeVolume !== null && (state === "brewing" || state === "finished") && (
                                 <FinishedCoffee
                                     coffeeVolume={coffeeVolume}
                                     state={state}
                                 />
-                                )}
+                            )}
 
                             {/* ---------------- Coffee grounds ---------------- */}
                             <CoffeeGrounds coffeeRatio={coffeeRatio} />

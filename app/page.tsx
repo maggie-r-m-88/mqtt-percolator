@@ -28,12 +28,12 @@ export default function Home() {
   }, [temperature, pressure, coffeeVolume, waterVolume, state]);
 
   // Toggle this to use static demo values for testing
-  const USE_DEMO_VALUES =  false;
+  const USE_DEMO_VALUES =  true;
 
-  const demoTemperature = 90;
+  const demoTemperature = 70;
   const demoPressure = 1.2;
-  const demoCoffeeVolume = 80;
-  const demoState: MokaState = "brewing";
+  const demoCoffeeVolume = 0;
+  const demoState: MokaState = "idle";
   const demoWaterVolume = MAX_WATER - demoCoffeeVolume;
 
   return (

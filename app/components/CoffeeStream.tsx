@@ -29,13 +29,13 @@ export default function CoffeeStream({
   useFrame((_, delta) => {
     if (!groupRef.current || intensity <= 0) return;
 
-    const streamHeight = 0.6;
+    const streamHeight = 0.62;
 
     // -----------------------------
-    // Wider: scale radii by 1.2 (20%)
+    // Bottom radius increased more (35% wider), top radius stays same
     // -----------------------------
-    const bottomRadius = 0.03 * 1.2; // wider bottom
-    const topRadius = 0.008 * 1.2;   // wider top
+    const bottomRadius = 0.03 * 2.5; // bigger bottom
+    const topRadius = 0.008 * 1.2;    // same as before
 
     const dropCount = Math.ceil(2 * intensity + dropsRef.current.length * 0.05);
 
