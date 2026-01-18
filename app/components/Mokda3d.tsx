@@ -134,11 +134,12 @@ export default function Moka3D({
                             <Water waterVolume={waterVolume} state={state} />
 
                             <WaterSteam
-waterY={waterY}
-  active={state === "brewing"}
-   temperature={temperature}
-   waterVolume={waterVolume}
-/>
+                                  waterY={waterY}
+                                    waterRadius={0.42}
+                                    temperature={temperature}
+                                    waterVolume={waterVolume}
+                                    active={state === "heating" || state === "brewing"}
+                                />
 
 
                             {/* ---------------- Finished coffee ---------------- */}
@@ -149,7 +150,7 @@ waterY={waterY}
                                 />
                                 )}
                             {/* ---------------- Coffee grounds ---------------- */}
-                            <CoffeeGrounds />
+                            <CoffeeGrounds coffeeRatio={coffeeRatio} />
 
                             <WarmerRing temperature={temperature} idle={state === "idle"} />
 

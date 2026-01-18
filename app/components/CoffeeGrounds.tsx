@@ -4,25 +4,33 @@ import { useTexture } from "@react-three/drei";
 import { useEffect } from "react";
 import * as THREE from "three";
 
-export default function CoffeeGrounds() {
-    const texture = useTexture("/coffee-ground.webp");
+type CoffeeGroundsProps = {
+  coffeeRatio: number; // 0 = start, 1 = fully brewed
+};
 
-    useEffect(() => {
-        texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+export default function CoffeeGrounds({ coffeeRatio }: CoffeeGroundsProps) {
+  const texture = useTexture("/coffee-ground.webp");
 
-        // X = around circumference
-        // Y = vertical tiling
-        texture.repeat.set(6, 2);
-    }, [texture]);
+  useEffect(() => {
+    texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+    texture.repeat.set(6, 2);
+  }, [texture]);
 
-    return (
-        <mesh position={[0, 0.48, 0]}>
-            <cylinderGeometry args={[0.36, 0.36, 0.2, 32]} />
-            <meshStandardMaterial
-                map={texture}
-                roughness={0.95}
-                metalness={0}
-            />
-        </mesh>
-    );
+  const startColor = new THREE.Color("#ffd051"); // light brown
+  const endColor = new THREE.Color("#1c0b03");   // dark brown
+
+  // Clone startColor every render before lerp
+  const color = startColor.clone().lerp(endColor, coffeeRatio);
+
+  return (
+    <mesh position={[0, 0.48, 0]}>
+      <cylinderGeometry args={[0.36, 0.36, 0.2, 32]} />
+      <meshStandardMaterial
+        map={texture}
+        color={color}
+        roughness={0.95}
+        metalness={0}
+      />
+    </mesh>
+  );
 }
