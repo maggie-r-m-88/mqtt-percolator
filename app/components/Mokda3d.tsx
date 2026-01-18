@@ -12,6 +12,7 @@ import Steam from "./Steam";
 import Water from "./Water";
 import FinishedCoffee from "./Coffee";
 import WaterSteam from "./WaterSteam";
+import CoffeeStream from "./CoffeeStream";
 
 
 type MokaState = "heating" | "brewing" | "finished" | "idle";
@@ -123,32 +124,32 @@ export default function Moka3D({
                                 />
                             </mesh>
 
-                            {/* Coffee Stream */}
-{/*                             <CoffeeStream
-                                brewing={state === "brewing"} // or true if you want to test always
+                            <CoffeeStream
+                                brewing={true}
                                 coffeeRatio={coffeeRatio}
-                                position={[0, 0.8, 0]}
-                            /> */}
+                                position={[0, 1.1, 0]} // adjust to spout exit
+                            />
 
                             {/* ---------------- Dynamic water level ---------------- */}
                             <Water waterVolume={waterVolume} state={state} />
 
                             <WaterSteam
-                                  waterY={waterY}
-                                    waterRadius={0.42}
-                                    temperature={temperature}
-                                    waterVolume={waterVolume}
-                                    active={state === "heating" || state === "brewing"}
-                                />
+                                waterY={waterY}
+                                waterRadius={0.42}
+                                temperature={temperature}
+                                waterVolume={waterVolume}
+                                active={state === "heating" || state === "brewing"}
+                            />
 
 
                             {/* ---------------- Finished coffee ---------------- */}
-                            {coffeeVolume !== null && state !== "heating" && (
-                            <FinishedCoffee 
-                                coffeeVolume={coffeeVolume}
-                                state={state}
+                            {coffeeVolume !== null && (state === "brewing" || state === "finished") && (
+                                <FinishedCoffee
+                                    coffeeVolume={coffeeVolume}
+                                    state={state}
                                 />
                                 )}
+
                             {/* ---------------- Coffee grounds ---------------- */}
                             <CoffeeGrounds coffeeRatio={coffeeRatio} />
 

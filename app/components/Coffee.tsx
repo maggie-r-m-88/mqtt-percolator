@@ -56,10 +56,12 @@ export default function FinishedCoffee({ coffeeVolume, state }: FinishedCoffeePr
 
       {/* Coffee surface */}
       <CoffeeSurface
-        radius={BASE_RADIUS * 0.87}
-        y={surfaceY}
-        active={state === "finished"}
-      />
+  radius={BASE_RADIUS * 0.87}
+  y={surfaceY}
+  active={state === "brewing" || state === "finished"}
+  sideMovement={0.005} // <-- small lateral wobble
+/>
+
     </group>
   );
 }

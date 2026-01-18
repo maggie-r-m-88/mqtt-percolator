@@ -5,87 +5,93 @@ import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 
 type CoffeeStreamProps = {
-  brewing: boolean;
-  coffeeRatio: number; // 0 to 1
   position?: [number, number, number];
+  brewing: boolean;
+  coffeeRatio: number;
 };
 
-type Particle = {
+type Drop = {
   mesh: THREE.Mesh;
   velocity: THREE.Vector3;
   life: number;
 };
 
-export default function CoffeeStream({ brewing, coffeeRatio, position = [0, 0, 0] }: CoffeeStreamProps) {
+export default function CoffeeStream({
+  position = [0, 0, 0],
+  brewing,
+  coffeeRatio,
+}: CoffeeStreamProps) {
   const groupRef = useRef<THREE.Group>(null);
-  const particlesRef = useRef<Particle[]>([]);
+  const dropsRef = useRef<Drop[]>([]);
 
-  // Cone configuration
-  const CONE_RADIUS = 0.05 + coffeeRatio * 0.05; // max radius at bottom
-  const CONE_HEIGHT = 0.8; // total height of stream
+  const intensity = brewing ? Math.min(Math.max(coffeeRatio, 0.05), 0.4) : 0;
 
-  useFrame((state, delta) => {
-    if (!groupRef.current) return;
+  useFrame((_, delta) => {
+    if (!groupRef.current || intensity <= 0) return;
 
-    // Spawn new particles when brewing
-    if (brewing) {
-      const particleCount = Math.ceil(1 + coffeeRatio * .5);
-      for (let i = 0; i < particleCount; i++) {
-        const geometry = new THREE.CylinderGeometry(0.01, 0.01, 0.82, 6);
-        const material = new THREE.MeshStandardMaterial({
-          color: "#caa472",
-          roughness: 0.2,
-          metalness: 0.1,
-        });
-        const mesh = new THREE.Mesh(geometry, material);
+    const streamHeight = 0.6;
 
-        // Spawn inside cone: radius decreases linearly from base to top
-        const angle = Math.random() * 2 * Math.PI;
-        const radius = Math.random() * CONE_RADIUS; // uniform within base circle
-        const x = Math.cos(angle) * radius;
-        const z = Math.sin(angle) * radius;
-        const y = 0; // bottom of cone (just above spout)
+    // -----------------------------
+    // Wider: scale radii by 1.2 (20%)
+    // -----------------------------
+    const bottomRadius = 0.03 * 1.2; // wider bottom
+    const topRadius = 0.008 * 1.2;   // wider top
 
-        mesh.position.set(x, y, z);
+    const dropCount = Math.ceil(2 * intensity + dropsRef.current.length * 0.05);
 
-        groupRef.current.add(mesh);
+    for (let i = 0; i < dropCount; i++) {
+      const length = 0.02 + Math.random() * 0.02;
+      const geometry = new THREE.CylinderGeometry(0.003, 0.003, length, 6);
+      const material = new THREE.MeshStandardMaterial({
+        color: "#4b2e0f",
+        transparent: true,
+        opacity: 0.4 + coffeeRatio * 0.5,
+      });
+      const mesh = new THREE.Mesh(geometry, material);
 
-        particlesRef.current.push({
-          mesh,
-          // velocity: upward + small outward to match cone
-          velocity: new THREE.Vector3(
-            x * 0.2, // slight outward
-            0.05 + Math.random() * 0.02,
-            z * 0.2
-          ),
-          life: 1 + Math.random() * 0.5,
-        });
-      }
+      // -----------------------------
+      // Y-position
+      // -----------------------------
+      let yOffset = Math.random() * streamHeight; // 0 = bottom, streamHeight = top
+
+      // Radius proportional to height (cone shape)
+      const radiusAtY = bottomRadius + (topRadius - bottomRadius) * (yOffset / streamHeight);
+      const theta = Math.random() * Math.PI * 2;
+      const xOffset = radiusAtY * Math.cos(theta);
+      const zOffset = radiusAtY * Math.sin(theta);
+
+      yOffset = -streamHeight + yOffset;
+
+      mesh.position.set(xOffset, yOffset, zOffset);
+      mesh.rotation.x = Math.PI / 2;
+
+      groupRef.current.add(mesh);
+
+      dropsRef.current.push({
+        mesh,
+        velocity: new THREE.Vector3(
+          0,
+          0.05 + Math.random() * 0.02, // moving up
+          0
+        ),
+        life: 1.5 + Math.random() * 0.5,
+      });
     }
 
-    // Update particles
-    for (let i = particlesRef.current.length - 1; i >= 0; i--) {
-      const p = particlesRef.current[i];
+    // Update existing drops
+    dropsRef.current.forEach((d, idx) => {
+      d.mesh.position.addScaledVector(d.velocity, delta);
+      d.life -= delta;
+      d.mesh.material.opacity = Math.max(0, d.life);
 
-      // Move particle
-      p.mesh.position.addScaledVector(p.velocity, delta);
-
-      // Gravity effect
-      p.velocity.y -= 0.02 * delta;
-
-      // Optionally shrink horizontal movement so particle stays inside cone
-      const t = p.mesh.position.y / CONE_HEIGHT; // normalized height
-      p.mesh.position.x *= 1 - t * 0.5; // gradually reduce x spread
-      p.mesh.position.z *= 1 - t * 0.5; // gradually reduce z spread
-
-      // Remove dead particles
-      p.life -= delta;
-      if (p.life <= 0) {
-        groupRef.current?.remove(p.mesh);
-        particlesRef.current.splice(i, 1);
+      if (d.life <= 0) {
+        groupRef.current?.remove(d.mesh);
+        dropsRef.current.splice(idx, 1);
       }
-    }
+    });
   });
+
+  if (!brewing || intensity <= 0) return null;
 
   return <group ref={groupRef} position={position} />;
 }

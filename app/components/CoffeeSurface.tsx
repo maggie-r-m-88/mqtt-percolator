@@ -43,6 +43,8 @@ export default function HexCoffeeSurface({
     geometry.computeVertexNormals();
   });
 
+  
+
   return (
     <mesh ref={meshRef} position={[0, y, 0]}>
       <primitive object={geometry} attach="geometry" />
