@@ -140,7 +140,7 @@ export default function MokaController({
   const pressureValue = pressure ?? 0;
 
   return (
-    <div className="bg-slate-800/70 backdrop-blur-sm rounded-2xl p-2 md:p-6 border border-slate-700/50 shadow-sm md:shadow-2xl w-full md:w-60 lg:w-80">
+    <div className="bg-slate-800/70 backdrop-blur-sm rounded-2xl p-2 md:p-6 border border-slate-700/50 shadow-sm md:shadow-2xl w-full md:w-60 lg:w-100">
 
       {/* Status */}
       <div className="bg-slate-900/50 rounded-lg md:rounded-xl p-2 md:p-3 mb-2 md:mb-5 border border-slate-700/30">
@@ -170,7 +170,7 @@ export default function MokaController({
       <div className="mb-5">
         <button
           onClick={() => (isRunning ? stop() : start())}
-          className={`w-full h-8 md:h-16 rounded-lg md:rounded-xl flex items-center justify-center md:justify-between px-2 md:px-6 transition-all duration-300 ${isRunning
+          className={`w-full h-8 md:h-10 rounded-lg md:rounded-xl flex items-center justify-center md:justify-between px-2 md:px-6 transition-all duration-300 ${isRunning
               ? "bg-gradient-to-r from-red-600 to-red-500 shadow-lg shadow-red-500/30"
               : "bg-slate-700 hover:bg-slate-600"
             }`}
@@ -218,7 +218,7 @@ export default function MokaController({
       <div className="mb-5">
         <div className="flex items-center justify-between mb-2">
           <Droplet className="w-5 h-5 text-white" />
-          <span className="text-white font-bold text-sm md:text-xl">{Math.round(tempValue)}°C</span>
+          <span className="text-white font-bold text-sm md:text-lg">{Math.round(tempValue)}°C</span>
         </div>
         <div className="bg-slate-900/50 rounded-lg h-2 overflow-hidden">
           <div className="h-full rounded-full transition-all duration-300" style={{ width: `${tempValue}%`, background: `linear-gradient(to right, #3b82f6, #f59e0b, #ef4444)` }} />
@@ -227,7 +227,7 @@ export default function MokaController({
 
       {/* ---------------- Pressure (Circular Barometer) ---------------- */}
       <div className="mb-2 md:mb-5 flex flex-col items-center">
-        <span className="text-white font-bold text-sm md:text-xl mb-2">{pressureValue.toFixed(2)} bar</span>
+        <span className="text-white font-bold text-sm md:text-lg mb-2">{pressureValue.toFixed(2)} bar</span>
 
         <svg className="w-12 h-12 md:w-24 md:h-24" viewBox="0 0 36 36">
           {/* Background circle */}

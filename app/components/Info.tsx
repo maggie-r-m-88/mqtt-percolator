@@ -40,7 +40,7 @@ export default function MokaProcessInfo({ state, pressure }: Props) {
   const { title, body } = MOKA_CONTENT[safeState];
 
   return (
-    <div className="hidden w-50 lg:block md:w-60 lg:w-80 bg-white/75 backdrop-blur-sm rounded-2xl p-5 border border-gray-300/50 shadow-xl">
+    <div className="hidden w-50 lg:block md:w-60 lg:w-100 bg-white/75 backdrop-blur-sm rounded-2xl p-5 border border-gray-300/50 shadow-xl">
       <h3 className="font-semibold text-base lg:text-lg mb-2 underline">
         {title}
       </h3>

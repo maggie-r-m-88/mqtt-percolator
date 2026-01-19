@@ -3,6 +3,16 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+      --text-xs: .65rem;
+    --text-xs--line-height: calc(1 / .65);
+    --text-sm: .775rem;
+    --text-sm--line-height: calc(1.25 / .775);
+    --text-base: .9rem;
+    --text-base--line-height: calc(1.5 / .9);
+    --text-lg: 1.05rem;
+    --text-lg--line-height: calc(1.75 / 1.05);
+    --text-xl: 1.25rem;
+    --text-xl--line-height: calc(1.75 / 1.25);
 }
 
 @theme inline {
