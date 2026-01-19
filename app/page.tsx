@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import MokaController from "./components/Controller/MokaController";
 import Moka3D from "./components/Moka/Moka3d";
 import MokaProcessInfo from "./components/Info";
+import Footer from "./components/Footer";
 export type MokaState = "heating" | "brewing" | "finished" | "idle";
 
 const MAX_WATER = 100;
@@ -18,17 +19,17 @@ export default function Home() {
     coffeeVolume !== null ? Math.max(0, MAX_WATER - coffeeVolume) : 0;
 
   useEffect(() => {
-/*     console.log("🏠 Home state update:", {
-      temperature,
-      pressure,
-      coffeeVolume,
-      waterVolume,
-      state,
-    }); */
+    /*     console.log("🏠 Home state update:", {
+          temperature,
+          pressure,
+          coffeeVolume,
+          waterVolume,
+          state,
+        }); */
   }, [temperature, pressure, coffeeVolume, waterVolume, state]);
 
   // Toggle this to use static demo values for testing
-  const USE_DEMO_VALUES =  false;
+  const USE_DEMO_VALUES = false;
 
   const demoTemperature = 70;
   const demoPressure = 1.2;
@@ -51,6 +52,10 @@ export default function Home() {
 
         {/* Floating control panel - top-left of this container */}
         <div className="absolute top-4 left-4 z-50">
+          <MokaProcessInfo
+            state={state}
+            pressure={pressure}
+          /><br />
           <MokaController
             temperature={temperature}
             pressure={pressure}
@@ -63,13 +68,11 @@ export default function Home() {
           />
         </div>
 
-        <div className="absolute top-4 right-4 z-50">
-          <MokaProcessInfo
-  state={state}
-  pressure={pressure}
-/>
 
-        </div>
+      <div className="absolute bottom-4 right-4 z-50">
+        <Footer />
+      </div>
+
       </div>
     </div>
   );

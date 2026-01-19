@@ -9,22 +9,30 @@ type Props = {
 
 const CONTENT: Record<MokaState, { title: string; body: string }> = {
   idle: {
-    title: "Moka Pot Ready",
-    body: "Fill the bottom chamber with water, add coffee to the basket, and place the pot on heat to begin brewing.",
+    title: "System at Rest",
+    body:
+      "The moka pot is at ambient temperature and pressure. Water remains in the lower chamber, and no fluid flow occurs until external heat is applied.",
   },
+
   heating: {
-    title: "Heating Water",
-    body: "Water in the lower chamber is heating up. As temperature rises, pressure begins to build.",
+    title: "Thermal Expansion & Pressure Build-Up",
+    body:
+      "Heat increases the temperature of the water and trapped air in the lower chamber. As vapor pressure rises in this sealed volume, internal pressure increases while the liquid remains below boiling.",
   },
+
   brewing: {
-    title: "Brewing Coffee",
-    body: "Pressure forces hot water up through the coffee grounds and into the upper chamber.",
+    title: "Pressure-Driven Extraction",
+    body:
+      "Once internal pressure exceeds the hydrostatic resistance of the coffee bed, hot water is forced upward through the grounds. Soluble compounds are extracted as fluid flows into the upper chamber.",
   },
+
   finished: {
-    title: "Coffee Ready",
-    body: "Brewing is complete. Remove from heat and enjoy your coffee.",
+    title: "Pressure Equalization",
+    body:
+      "Water in the lower chamber has been displaced, and pressure rapidly equalizes through the safety valve and upper outlet. Extraction ceases and the brewed coffee stabilizes in the upper chamber.",
   },
 };
+
 
 export default function MokaProcessInfo({ state, pressure }: Props) {
   // 🔑 Always resolve to a valid state
@@ -32,7 +40,7 @@ export default function MokaProcessInfo({ state, pressure }: Props) {
   const { title, body } = CONTENT[safeState];
 
   return (
-    <div className="w-80 bg-slate-800/70 backdrop-blur-md rounded-2xl p-5 border border-slate-700/50 shadow-xl">
+    <div className="w-80 bg-slate-800/70 backdrop-blur-sm rounded-2xl p-5 border border-slate-700/50 shadow-xl">
       <h3 className="text-white font-semibold text-lg mb-2">
         {title}
       </h3>
@@ -41,13 +49,6 @@ export default function MokaProcessInfo({ state, pressure }: Props) {
         {body}
       </p>
 
-      {pressure !== null && safeState !== "idle" && (
-        <p className="mt-3 text-xs text-slate-400">
-          Pressure: <span className="text-orange-400 font-medium">
-            {pressure.toFixed(2)} bar
-          </span>
-        </p>
-      )}
     </div>
   );
 }

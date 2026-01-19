@@ -82,7 +82,7 @@ export default function MokaController({
       onFailure: () => setDisconnected(true),
     });
 
-    return () => { try { client.disconnect(); } catch {} };
+    return () => { try { client.disconnect(); } catch { } };
   }, [useBackendSimulator, setTemperature, setPressure, setCoffeeVolume, setState]);
 
   // Simulation helpers
@@ -110,7 +110,7 @@ export default function MokaController({
 
     sim.interval = setInterval(() => {
       if (temp < 95) temp += TEMP_DELTA;
-      press = Math.min(1.5, Math.max(0, (temp - 50)/30));
+      press = Math.min(1.5, Math.max(0, (temp - 50) / 30));
       if (press >= 1 && coffee < 100) { coffee += COFFEE_DELTA; st = "brewing"; }
       if (coffee >= 100) { coffee = 100; st = "finished"; updateAll(temp, press, coffee, st); stop(true); return; }
       updateAll(temp, press, coffee, st);
@@ -140,19 +140,17 @@ export default function MokaController({
   const pressureValue = pressure ?? 0;
 
   return (
-    <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-700/50 shadow-2xl w-80">
+    <div className="bg-slate-800/70 backdrop-blur-sm rounded-2xl p-6 border border-slate-700/50 shadow-2xl w-80">
 
       {/* Status */}
       <div className="bg-slate-900/50 rounded-xl p-3 mb-5 border border-slate-700/30">
         <div className="flex items-center justify-between">
           <span className="text-slate-400 text-sm font-medium">Status</span>
           <div className="flex items-center gap-2">
-            <div className={`w-3 h-3 rounded-full ${
-              state === 'heating' ? 'bg-orange-500 animate-pulse' :
-              state === 'finished' ? 'bg-emerald-500' :
-              'bg-slate-600'
-            }`} />
-            <span className="text-white text-sm font-semibold capitalize">{state}</span>
+            <div className={`w-3 h-3 rounded-full ${state === 'heating' ? 'bg-orange-500 animate-pulse' :
+                state === 'finished' ? 'bg-emerald-500' :
+                  'bg-slate-600'
+              }`} />
           </div>
         </div>
       </div>
@@ -161,11 +159,10 @@ export default function MokaController({
       <div className="mb-5">
         <button
           onClick={() => isRunning ? stop() : start()}
-          className={`w-full h-16 rounded-xl flex items-center justify-between px-6 transition-all duration-300 ${
-            isRunning 
-              ? 'bg-gradient-to-r from-red-600 to-red-500 shadow-lg shadow-red-500/30' 
+          className={`w-full h-16 rounded-xl flex items-center justify-between px-6 transition-all duration-300 ${isRunning
+              ? 'bg-gradient-to-r from-red-600 to-red-500 shadow-lg shadow-red-500/30'
               : 'bg-slate-700 hover:bg-slate-600'
-          }`}
+            }`}
         >
           <Power className="w-6 h-6 text-white" />
           <span className="text-white font-bold text-lg">{isRunning ? 'ON' : 'OFF'}</span>
@@ -195,7 +192,7 @@ export default function MokaController({
       {/* Temperature */}
       <div className="mb-5">
         <div className="flex items-center justify-between mb-2">
-          <Zap className="w-4 h-4 text-orange-500" />
+          <Droplet className="w-5 h-5 text-white" />
           <span className="text-white font-bold text-xl">{Math.round(tempValue)}°C</span>
         </div>
         <div className="bg-slate-900/50 rounded-lg h-2 overflow-hidden">
@@ -204,65 +201,44 @@ export default function MokaController({
       </div>
 
       {/* ---------------- Pressure (Circular Barometer) ---------------- */}
-<div className="mb-5 flex flex-col items-center">
-  <span className="text-white font-bold text-xl mb-2">{pressureValue.toFixed(2)} bar</span>
+      <div className="mb-5 flex flex-col items-center">
+        <span className="text-white font-bold text-xl mb-2">{pressureValue.toFixed(2)} bar</span>
 
-  <svg className="w-24 h-24" viewBox="0 0 36 36">
-    {/* Background circle */}
-    <circle
-      className="text-slate-700"
-      strokeWidth="3"
-      stroke="currentColor"
-      fill="none"
-      cx="18"
-      cy="18"
-      r="16"
-    />
-    {/* Foreground progress circle */}
-    <circle
-      stroke="url(#pressureGradient)"
-      strokeWidth="3"
-      strokeLinecap="round"
-      fill="none"
-      cx="18"
-      cy="18"
-      r="16"
-      strokeDasharray={`${(pressureValue / 2) * 100} 100`}
-      transform="rotate(-90 18 18)"
-      className="transition-all duration-300"
-    />
-    {/* Gradient definition */}
-    <defs>
-      <linearGradient id="pressureGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-        <stop offset="0%" stopColor="#3b82f6" />
-        <stop offset="100%" stopColor="#06b6d4" />
-      </linearGradient>
-    </defs>
-  </svg>
-</div>
-
-{/* Original horizontal bar (commented out for now) */}
-{/*
-<div className="mb-5">
-  <div className="flex items-center justify-between mb-2">
-    <span className="text-white font-bold text-xl">{pressureValue.toFixed(2)} bar</span>
-  </div>
-  <div className="bg-slate-900/50 rounded-lg h-2 overflow-hidden">
-    <div className="h-full rounded-full transition-all duration-300" style={{ width: `${(pressureValue / 2) * 100}%`, background: 'linear-gradient(to right, #3b82f6, #06b6d4)' }} />
-  </div>
-</div>
-*/}
+        <svg className="w-24 h-24" viewBox="0 0 36 36">
+          {/* Background circle */}
+          <circle
+            className="text-slate-700"
+            strokeWidth="3"
+            stroke="currentColor"
+            fill="none"
+            cx="18"
+            cy="18"
+            r="16"
+          />
+          {/* Foreground progress circle */}
+          <circle
+            stroke="url(#pressureGradient)"
+            strokeWidth="3"
+            strokeLinecap="round"
+            fill="none"
+            cx="18"
+            cy="18"
+            r="16"
+            strokeDasharray={`${(pressureValue / 2) * 100} 100`}
+            transform="rotate(-90 18 18)"
+            className="transition-all duration-300"
+          />
+          {/* Gradient definition */}
+          <defs>
+            <linearGradient id="pressureGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#3b82f6" />
+              <stop offset="100%" stopColor="#06b6d4" />
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
 
 
-      {/* Coffee */}
-{/*       <div>
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-white font-bold text-xl">{Math.round(coffeePercent)}%</span>
-        </div>
-        <div className="bg-slate-900/50 rounded-lg h-2 overflow-hidden">
-          <div className="h-full rounded-full transition-all duration-300" style={{ width: `${coffeePercent}%`, background: 'linear-gradient(to right, #f59e0b, #fcd34d)' }} />
-        </div>
-      </div> */}
     </div>
   );
 }

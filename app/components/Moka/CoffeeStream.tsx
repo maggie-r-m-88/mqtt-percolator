@@ -41,8 +41,8 @@ export default function CoffeeStream({
 
     for (let i = 0; i < dropCount; i++) {
 
-        const MAX_DROPS = 300; // tweak this
-        if (dropsRef.current.length >= MAX_DROPS) break; // stop spawning more
+      const MAX_DROPS = 600; // tweak this
+      if (dropsRef.current.length >= MAX_DROPS) break; // stop spawning more
       const length = 0.02 + Math.random() * 0.02;
       const geometry = new THREE.CylinderGeometry(0.003, 0.003, length, 6);
 
@@ -79,7 +79,7 @@ export default function CoffeeStream({
           0.05 + Math.random() * 0.02, // moving up
           0
         ),
-        life: 1.1 + Math.random() * 0.5,
+        life: 1.2 + Math.random() * 0.5,
       });
     }
 
