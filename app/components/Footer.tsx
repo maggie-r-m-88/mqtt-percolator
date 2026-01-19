@@ -19,37 +19,38 @@ export default function FooterAttribution() {
     return (
         <>
             {/* Footer */}
-            <div className="flex items-center gap-3 text-xs text-slate-300 bg-slate-800 backdrop-blur-md px-3 md:px-4 py-1 md:py-2 rounded-full border border-slate-700/50 shadow-lg">
-                <span >
+            <div className="flex items-center gap-3 text-xs md:text-sm text-slate-800 py-1 md:py-2">
+                {/* Built by */}
+                <span>
                     Built by{" "}
                     <a
                         href="https://maggie-martin.com"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-white hover:text-[#E19B25] transition-colors font-semibold"
+                        className="text-slate-900 hover:text-[#E19B25] transition-colors font-semibold"
                     >
-                        Maggie<span className="hidden md:inline"> Martin</span>
+                        Maggie
                     </a>
                 </span>
 
-                <span className="hidden sm:block opacity-40">•</span>
+                {/* ───────── Desktop (lg+) ───────── */}
+                <span className="hidden lg:inline opacity-40">•</span>
 
-                {/* Desktop: text link */}
                 <a
                     href="https://github.com/maggie-r-m-88/mqtt-percolator"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="hidden sm:inline hover:text-[#E19B25] transition-colors font-semibold"
+                    className="hidden lg:inline text-slate-900 hover:text-[#E19B25] transition-colors font-semibold"
                 >
                     Source Code
                 </a>
 
-                {/* Mobile: GitHub icon */}
+                {/* ───────── Mobile / Tablet (<lg) ───────── */}
                 <a
                     href="https://github.com/maggie-r-m-88/mqtt-percolator"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="sm:hidden p-2 rounded-full border border-slate-600 hover:bg-slate-700 transition"
+                    className="lg:hidden p-1 hover:text-[#E19B25] transition-colors"
                     aria-label="Source Code on GitHub"
                 >
                     <svg
@@ -69,29 +70,27 @@ export default function FooterAttribution() {
                     </svg>
                 </a>
 
-                <span className="lg:hidden opacity-40">•</span>
-                {/* Mobile-only info button */}
                 <button
                     onClick={() => setShowModal(true)}
-                    className="ml-auto lg:hidden p-1 rounded-full hover:bg-slate-700 transition"
+                    className="lg:hidden p-1 rounded-full transition ml-auto"
                     aria-label="Show Moka Process Info"
                 >
-                    <Info className="w-5 h-5 text-white" />
+                    <Info className="w-5 h-5 text-slate-800 hover:text-[#E19B25]" />
                 </button>
             </div>
 
             {/* Modal */}
             {showModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-                    <div className="bg-slate-800 rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto p-5 relative">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4 py-8">
+                    <div className="bg-white rounded-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto p-5 relative">
                         <button
                             onClick={() => setShowModal(false)}
                             className="absolute top-3 right-3 p-1 rounded-full hover:bg-slate-700"
                         >
-                            <X className="w-5 h-5 text-white" />
+                            <X className="w-5 h-5 text-slate-800" />
                         </button>
 
-                        <h2 className="text-white font-bold mb-4 text-center">
+                        <h2 className="text-slate-800 font-bold my-6 text-center underline">
                             Moka Pot Process
                         </h2>
 
@@ -109,8 +108,8 @@ export default function FooterAttribution() {
 
                                     {/* Text */}
                                     <div className="ml-4">
-                                        <h3 className="text-white font-semibold text-sm mb-2">{step.title}</h3>
-                                        <p className="text-slate-300 text-sm leading-relaxed">
+                                        <h3 className="text-slate-800 font-semibold text-sm mb-2">{step.title}</h3>
+                                        <p className="text-slate-700 text-sm leading-relaxed">
                                             {step.body}
                                         </p>
                                     </div>

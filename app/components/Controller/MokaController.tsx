@@ -150,9 +150,12 @@ export default function MokaController({
 
           {/* Light */}
           <div className="flex items-center gap-2">
+            <span className="text-white hidden md:inline text-sm capitalize">{state}</span>
             <div
               className={`w-3 h-3 rounded-full ${state === "heating"
-                  ? "bg-orange-500 animate-pulse"
+                  ? "bg-red-500 animate-pulse"
+                  : state === "brewing"
+                    ? "bg-orange-500 animate-pulse"
                   : state === "finished"
                     ? "bg-emerald-500"
                     : "bg-slate-600"

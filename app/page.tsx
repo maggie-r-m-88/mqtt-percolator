@@ -53,7 +53,7 @@ export default function Home() {
         {/* Panel container */}
         <div
           className={`
-      absolute top-2 left-2 lg:top-4 lg:left-4  
+      absolute top-2 left-2 md:top-4 md:left-4  
       flex flex-col space-y-4 z-50
     `}
         >
@@ -74,7 +74,7 @@ export default function Home() {
         </div>
 
         {/* Footer stays bottom-right */}
-        <div className="absolute top-2 right-2 md:bottom-4 md:right-4 z-50">
+        <div className="absolute top-2 right-4 md:top-4 md:top-4 z-50">
           <Footer />
         </div>
       </div>
