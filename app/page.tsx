@@ -74,7 +74,7 @@ export default function Home() {
         </div>
 
         {/* Footer stays bottom-right */}
-        <div className="absolute bottom-2 right-2 md:bottom-4 md:right-4 z-50">
+        <div className="absolute top-2 right-2 md:bottom-4 md:right-4 z-50">
           <Footer />
         </div>
       </div>
