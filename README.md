@@ -1,4 +1,6 @@
-# Moka Pot Simulator ☕️
+# Moka Pot Simulator 
+
+![Moka Pot Simulator](public/percolator-9s.gif)
 
 An interactive **3D moka pot coffee maker simulator** built with **React Three Fiber** and powered by **MQTT** for real-time state updates.
 
