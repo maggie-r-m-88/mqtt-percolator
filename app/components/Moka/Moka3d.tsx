@@ -2,7 +2,7 @@
 
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Center, Bounds } from "@react-three/drei";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import * as THREE from "three";
 import WarmerRing from "./WarmerRing";
 import MokaPotTransparent from "./MokaPotTransparent";
@@ -26,6 +26,19 @@ type Moka3DProps = {
     state: MokaState | null;
 };
 
+function useIsMobile(breakpoint = 768) {
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const media = window.matchMedia(`(max-width: ${breakpoint}px)`);
+        const update = () => setIsMobile(media.matches);
+        update();
+        media.addEventListener("change", update);
+        return () => media.removeEventListener("change", update);
+    }, [breakpoint]);
+
+    return isMobile;
+}
 
 export default function Moka3D({
     temperature,
@@ -38,6 +51,8 @@ export default function Moka3D({
     useEffect(() => {
 
     }, [temperature, pressure, coffeeVolume, waterVolume, state]);
+
+    const isMobile = useIsMobile();
 
     const isIdle = state === "idle";
     const visibleWater = waterVolume !== null && !isIdle;
@@ -69,10 +84,13 @@ export default function Moka3D({
     const coffeeBottomRadius = 0.40; // stays constant
     const coffeeHeight = 0.01 + coffeeRatio * (0.61 - 0.01);
 
-
-
     return (
-        <Canvas camera={{ position: [3, 2, 5], fov: 30 }} >
+        <Canvas camera={{
+            position: isMobile ? [0, 2.5, 7] : [3, 2, 5],
+            fov: isMobile ? 70 : 30,
+            near: 0.1,
+            far: 100,
+        }} >
             {/* Lighting */}
             <ambientLight intensity={0.5} />
             <directionalLight position={[5, 5, 5]} intensity={1} />
@@ -149,7 +167,7 @@ export default function Moka3D({
 
 
                             {state !== "finished" && (
-                            <WarmerRing temperature={temperature} state={state} />
+                                <WarmerRing temperature={temperature} state={state} />
                             )}
 
 

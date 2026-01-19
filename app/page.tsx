@@ -50,12 +50,17 @@ export default function Home() {
           state={USE_DEMO_VALUES ? demoState : state}
         />
 
-        {/* Floating control panel - top-left of this container */}
-        <div className="absolute top-4 left-4 z-50">
-          <MokaProcessInfo
-            state={state}
-            pressure={pressure}
-          /><br />
+        {/* Panel container */}
+        <div
+          className={`
+      absolute top-2 left-2 lg:top-4 lg:left-4  
+      flex flex-col space-y-4 z-50
+    `}
+        >
+          {/* Info Panel */}
+          <MokaProcessInfo state={state} pressure={pressure} />
+
+          {/* Controller */}
           <MokaController
             temperature={temperature}
             pressure={pressure}
@@ -68,12 +73,12 @@ export default function Home() {
           />
         </div>
 
-
-      <div className="absolute bottom-4 right-4 z-50">
-        <Footer />
+        {/* Footer stays bottom-right */}
+        <div className="absolute bottom-2 right-2 md:bottom-4 md:right-4 z-50">
+          <Footer />
+        </div>
       </div>
 
-      </div>
     </div>
   );
 }
