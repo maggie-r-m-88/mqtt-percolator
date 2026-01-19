@@ -1,3 +1,7 @@
+"use client";
+
+type MokaState = "heating" | "brewing" | "finished" | "idle";
+
 type WarmerRingProps = {
   temperature: number | null;
   state: MokaState | null;
