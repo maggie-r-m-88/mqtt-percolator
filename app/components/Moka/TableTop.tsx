@@ -2,9 +2,9 @@
 
 export default function TableTop() {
     return (
-        <mesh position={[0, -.37, 0]}>
+        <mesh position={[0, -9, 0]}>
             {/* args: [width, height, depth] */}
-            <boxGeometry args={[3, 0.05, 3]} />
+            <boxGeometry args={[4, 1, 4]} />
             <meshStandardMaterial
                 color="#BBBBBB"
                 metalness={0.2}

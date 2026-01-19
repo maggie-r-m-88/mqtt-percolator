@@ -3,16 +3,17 @@
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Center, Bounds } from "@react-three/drei";
 import { useEffect } from "react";
+import * as THREE from "three";
 import WarmerRing from "./WarmerRing";
 import MokaPotTransparent from "./MokaPotTransparent";
 import CoffeeGrounds from "./CoffeeGrounds";
-import TableTop from "./TableTop";
+
 import Steam from "./Steam";
 import Water from "./Water";
 import FinishedCoffee from "./Coffee";
 import WaterSteam from "./WaterSteam";
 import CoffeeStream from "./CoffeeStream";
-//import PressureIndicator from "./PressureIndicator";
+
 
 
 type MokaState = "heating" | "brewing" | "finished" | "idle";
@@ -90,15 +91,6 @@ export default function Moka3D({
                         <group position={[-0.85, -0.35, 0]}>
                             <Steam active={state === "finished"} />
                         </group>
-                        {(state === "heating" || state === "brewing") && (
-/*                             <PressureIndicator
-                                position={[-.19, -.5, 0]} // slightly above moka top
-                                radius={0.08}
-                                segments={4}
-                                rotation={[0, 0, 0]}
-                                pressure={pressure ?? undefined}       // <-- link to live pressure
-                                maxPressure={1.5}         // max expected pressure of your moka pot
-                            />)} */
 
                         {/* Your transparent GLB pot */}
                         <MokaPotTransparent state={state} />
@@ -155,9 +147,13 @@ export default function Moka3D({
                             {/* ---------------- Coffee grounds ---------------- */}
                             <CoffeeGrounds coffeeRatio={coffeeRatio} />
 
-                            <WarmerRing temperature={temperature} idle={state === "idle"} />
 
-                            <TableTop />
+                            {state !== "finished" && (
+                            <WarmerRing temperature={temperature} state={state} />
+                            )}
+
+
+
                         </group>
                     </group>
                 </Center>

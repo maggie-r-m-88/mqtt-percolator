@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import MokaController from "./components/Controller/MokaController";
 import Moka3D from "./components/Moka/Moka3d";
-
+import MokaProcessInfo from "./components/Info";
 export type MokaState = "heating" | "brewing" | "finished" | "idle";
 
 const MAX_WATER = 100;
@@ -61,6 +61,14 @@ export default function Home() {
             setCoffeeVolume={setCoffeeVolume}
             setState={setState}
           />
+        </div>
+
+        <div className="absolute top-4 right-4 z-50">
+          <MokaProcessInfo
+  state={state}
+  pressure={pressure}
+/>
+
         </div>
       </div>
     </div>
