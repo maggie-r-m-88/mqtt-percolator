@@ -18,7 +18,7 @@ export default function MokaPotTransparent({ state }: MokaPotTransparentProps) {
                 child.material = child.material.clone();
                 child.material.color.set("white");
                 child.material.transparent = true;
-                child.material.opacity = 0.1;
+                child.material.opacity = 0.18;
 
                 child.material.depthWrite = false;
             }

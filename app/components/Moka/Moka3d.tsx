@@ -3,7 +3,6 @@
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Center, Bounds } from "@react-three/drei";
 import { useEffect } from "react";
-import * as THREE from "three";
 import WarmerRing from "./WarmerRing";
 import MokaPotTransparent from "./MokaPotTransparent";
 import CoffeeGrounds from "./CoffeeGrounds";
@@ -13,7 +12,7 @@ import Water from "./Water";
 import FinishedCoffee from "./Coffee";
 import WaterSteam from "./WaterSteam";
 import CoffeeStream from "./CoffeeStream";
-import PressureIndicator from "./PressureIndicator";
+//import PressureIndicator from "./PressureIndicator";
 
 
 type MokaState = "heating" | "brewing" | "finished" | "idle";
@@ -36,13 +35,7 @@ export default function Moka3D({
 }: Moka3DProps) {
     // Console log whenever props update
     useEffect(() => {
-        /* console.log("🔥 Moka3D Props Updated:", {
-            temperature,
-            pressure,
-            coffeeVolume,
-            waterVolume,
-            state,
-        }); */
+
     }, [temperature, pressure, coffeeVolume, waterVolume, state]);
 
     const isIdle = state === "idle";
@@ -98,14 +91,14 @@ export default function Moka3D({
                             <Steam active={state === "finished"} />
                         </group>
                         {(state === "heating" || state === "brewing") && (
-                            <PressureIndicator
+/*                             <PressureIndicator
                                 position={[-.19, -.5, 0]} // slightly above moka top
                                 radius={0.08}
                                 segments={4}
                                 rotation={[0, 0, 0]}
                                 pressure={pressure ?? undefined}       // <-- link to live pressure
                                 maxPressure={1.5}         // max expected pressure of your moka pot
-                            />)}
+                            />)} */
 
                         {/* Your transparent GLB pot */}
                         <MokaPotTransparent state={state} />
