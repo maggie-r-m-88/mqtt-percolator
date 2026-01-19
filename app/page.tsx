@@ -18,21 +18,21 @@ export default function Home() {
     coffeeVolume !== null ? Math.max(0, MAX_WATER - coffeeVolume) : 0;
 
   useEffect(() => {
-    console.log("🏠 Home state update:", {
+/*     console.log("🏠 Home state update:", {
       temperature,
       pressure,
       coffeeVolume,
       waterVolume,
       state,
-    });
+    }); */
   }, [temperature, pressure, coffeeVolume, waterVolume, state]);
 
   // Toggle this to use static demo values for testing
-  const USE_DEMO_VALUES =  true;
+  const USE_DEMO_VALUES =  false;
 
   const demoTemperature = 70;
   const demoPressure = 1.2;
-  const demoCoffeeVolume = 0;
+  const demoCoffeeVolume = 50;
   const demoState: MokaState = "idle";
   const demoWaterVolume = MAX_WATER - demoCoffeeVolume;
 

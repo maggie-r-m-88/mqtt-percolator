@@ -176,13 +176,13 @@ export default function MokaController({
       </div>
 
       {/* Control Buttons */}
-      <div className="grid grid-cols-2 gap-3 mb-5">
+      {/* <div className="grid grid-cols-2 gap-3 mb-5">
         <button
-  onClick={() => stop()} // call stop with no args
-  className="px-4 py-3 bg-slate-700 hover:bg-slate-600 text-white font-semibold rounded-lg transition-all duration-200 hover:scale-105"
->
-  Stop
-</button>
+          onClick={() => stop()} // call stop with no args
+          className="px-4 py-3 bg-slate-700 hover:bg-slate-600 text-white font-semibold rounded-lg transition-all duration-200 hover:scale-105"
+        >
+          Stop
+        </button>
 
         <button
           onClick={reset}
@@ -190,7 +190,7 @@ export default function MokaController({
         >
           Reset
         </button>
-      </div>
+      </div> */}
 
       {/* Temperature */}
       <div className="mb-5">
@@ -203,15 +203,56 @@ export default function MokaController({
         </div>
       </div>
 
-      {/* Pressure */}
-      <div className="mb-5">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-white font-bold text-xl">{pressureValue.toFixed(2)} bar</span>
-        </div>
-        <div className="bg-slate-900/50 rounded-lg h-2 overflow-hidden">
-          <div className="h-full rounded-full transition-all duration-300" style={{ width: `${(pressureValue / 2) * 100}%`, background: 'linear-gradient(to right, #3b82f6, #06b6d4)' }} />
-        </div>
-      </div>
+      {/* ---------------- Pressure (Circular Barometer) ---------------- */}
+<div className="mb-5 flex flex-col items-center">
+  <span className="text-white font-bold text-xl mb-2">{pressureValue.toFixed(2)} bar</span>
+
+  <svg className="w-24 h-24" viewBox="0 0 36 36">
+    {/* Background circle */}
+    <circle
+      className="text-slate-700"
+      strokeWidth="3"
+      stroke="currentColor"
+      fill="none"
+      cx="18"
+      cy="18"
+      r="16"
+    />
+    {/* Foreground progress circle */}
+    <circle
+      stroke="url(#pressureGradient)"
+      strokeWidth="3"
+      strokeLinecap="round"
+      fill="none"
+      cx="18"
+      cy="18"
+      r="16"
+      strokeDasharray={`${(pressureValue / 2) * 100} 100`}
+      transform="rotate(-90 18 18)"
+      className="transition-all duration-300"
+    />
+    {/* Gradient definition */}
+    <defs>
+      <linearGradient id="pressureGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stopColor="#3b82f6" />
+        <stop offset="100%" stopColor="#06b6d4" />
+      </linearGradient>
+    </defs>
+  </svg>
+</div>
+
+{/* Original horizontal bar (commented out for now) */}
+{/*
+<div className="mb-5">
+  <div className="flex items-center justify-between mb-2">
+    <span className="text-white font-bold text-xl">{pressureValue.toFixed(2)} bar</span>
+  </div>
+  <div className="bg-slate-900/50 rounded-lg h-2 overflow-hidden">
+    <div className="h-full rounded-full transition-all duration-300" style={{ width: `${(pressureValue / 2) * 100}%`, background: 'linear-gradient(to right, #3b82f6, #06b6d4)' }} />
+  </div>
+</div>
+*/}
+
 
       {/* Coffee */}
 {/*       <div>

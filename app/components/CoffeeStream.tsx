@@ -7,7 +7,7 @@ import * as THREE from "three";
 type CoffeeStreamProps = {
   position?: [number, number, number];
   brewing: boolean;
-  coffeeRatio: number;
+  coffeeRatio: number; // 0 = start of brewing (light), 1 = full espresso
 };
 
 type Drop = {
@@ -26,40 +26,45 @@ export default function CoffeeStream({
 
   const intensity = brewing ? Math.min(Math.max(coffeeRatio, 0.05), 0.4) : 0;
 
+  // Colors
+  const cremaColor = new THREE.Color("#caa472");
+  const espressoColor = new THREE.Color("#2a1409");
+
   useFrame((_, delta) => {
     if (!groupRef.current || intensity <= 0) return;
 
     const streamHeight = 0.62;
+    const bottomRadius = 0.03 * 2.5; // wider bottom
+    const topRadius = 0.01 * 1.2;   // top radius
 
-    // -----------------------------
-    // Bottom radius increased more (35% wider), top radius stays same
-    // -----------------------------
-    const bottomRadius = 0.03 * 2.5; // bigger bottom
-    const topRadius = 0.008 * 1.2;    // same as before
-
-    const dropCount = Math.ceil(2 * intensity + dropsRef.current.length * 0.05);
+    const dropCount = Math.ceil(2 * intensity + dropsRef.current.length * 0.02);
 
     for (let i = 0; i < dropCount; i++) {
+
+        const MAX_DROPS = 300; // tweak this
+        if (dropsRef.current.length >= MAX_DROPS) break; // stop spawning more
       const length = 0.02 + Math.random() * 0.02;
       const geometry = new THREE.CylinderGeometry(0.003, 0.003, length, 6);
+
+      // Interpolate color based on coffeeRatio
+      const color = new THREE.Color().lerpColors(cremaColor, espressoColor, coffeeRatio);
+
       const material = new THREE.MeshStandardMaterial({
-        color: "#4b2e0f",
+        color,
         transparent: true,
         opacity: 0.4 + coffeeRatio * 0.5,
       });
+
       const mesh = new THREE.Mesh(geometry, material);
 
       // -----------------------------
       // Y-position
       // -----------------------------
-      let yOffset = Math.random() * streamHeight; // 0 = bottom, streamHeight = top
-
-      // Radius proportional to height (cone shape)
+      let yOffset = Math.random() * streamHeight;
       const radiusAtY = bottomRadius + (topRadius - bottomRadius) * (yOffset / streamHeight);
       const theta = Math.random() * Math.PI * 2;
       const xOffset = radiusAtY * Math.cos(theta);
       const zOffset = radiusAtY * Math.sin(theta);
-
       yOffset = -streamHeight + yOffset;
 
       mesh.position.set(xOffset, yOffset, zOffset);
@@ -74,7 +79,7 @@ export default function CoffeeStream({
           0.05 + Math.random() * 0.02, // moving up
           0
         ),
-        life: 1.5 + Math.random() * 0.5,
+        life: 1.1 + Math.random() * 0.5,
       });
     }
 
@@ -82,6 +87,12 @@ export default function CoffeeStream({
     dropsRef.current.forEach((d, idx) => {
       d.mesh.position.addScaledVector(d.velocity, delta);
       d.life -= delta;
+
+      // Keep color updated if coffeeRatio changes during brewing
+      if (d.mesh.material instanceof THREE.MeshStandardMaterial) {
+        d.mesh.material.color.lerpColors(cremaColor, espressoColor, coffeeRatio);
+      }
+
       d.mesh.material.opacity = Math.max(0, d.life);
 
       if (d.life <= 0) {
