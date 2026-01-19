@@ -53,7 +53,10 @@ export default function PressureRings({
       const pulse = Math.sin(elapsed * 2 + offset) * 0.25 + 1;
 
       child.scale.set(pulse * pulseScale, 1, pulse * pulseScale);
-      (child.material as THREE.MeshBasicMaterial).opacity = pulseOpacity * Math.sin(elapsed * 2 + offset) ** 2;
+
+      if (child instanceof THREE.Mesh && child.material instanceof THREE.MeshBasicMaterial) {
+        child.material.opacity = pulseOpacity * Math.sin(elapsed * 2 + offset) ** 2;
+      }
     });
   });
 

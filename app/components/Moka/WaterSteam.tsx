@@ -78,7 +78,10 @@ export default function SteamBubbles({
         bubblesRef.current.forEach((b, idx) => {
             b.mesh.position.addScaledVector(b.velocity, delta);
             b.life -= delta;
-            b.mesh.material.opacity = Math.max(0, b.life);
+
+            if (b.mesh.material instanceof THREE.MeshStandardMaterial) {
+                b.mesh.material.opacity = Math.max(0, b.life);
+            }
 
             if (b.life <= 0) {
                 groupRef.current?.remove(b.mesh);

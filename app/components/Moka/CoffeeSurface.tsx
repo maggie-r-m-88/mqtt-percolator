@@ -8,12 +8,14 @@ type HexCoffeeSurfaceProps = {
   radius: number;
   y: number;
   active: boolean;
+  sideMovement?: number; // optional lateral wobble
 };
 
 export default function HexCoffeeSurface({
   radius,
   y,
   active,
+  sideMovement = 0,
 }: HexCoffeeSurfaceProps) {
   const meshRef = useRef<THREE.Mesh>(null);
 

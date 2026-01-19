@@ -91,9 +91,8 @@ export default function CoffeeStream({
       // Keep color updated if coffeeRatio changes during brewing
       if (d.mesh.material instanceof THREE.MeshStandardMaterial) {
         d.mesh.material.color.lerpColors(cremaColor, espressoColor, coffeeRatio);
+        d.mesh.material.opacity = Math.max(0, d.life);
       }
-
-      d.mesh.material.opacity = Math.max(0, d.life);
 
       if (d.life <= 0) {
         groupRef.current?.remove(d.mesh);

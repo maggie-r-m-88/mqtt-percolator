@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import MokaController from "./components/Controller/MokaController";
-import Moka3D from "./components/Mokda3d";
+import Moka3D from "./components/Moka/Moka3d";
 
 export type MokaState = "heating" | "brewing" | "finished" | "idle";
 
