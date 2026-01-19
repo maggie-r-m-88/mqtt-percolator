@@ -13,6 +13,7 @@ import Water from "./Water";
 import FinishedCoffee from "./Coffee";
 import WaterSteam from "./WaterSteam";
 import CoffeeStream from "./CoffeeStream";
+import PressureIndicator from "./PressureInidcator";
 
 
 type MokaState = "heating" | "brewing" | "finished" | "idle";
@@ -96,6 +97,17 @@ export default function Moka3D({
                         <group position={[-0.85, -0.35, 0]}>
                             <Steam active={state === "finished"} />
                         </group>
+                        {(state === "heating" || state === "brewing") && (
+                        <PressureIndicator
+                            position={[-.19,-.5, 0]} // slightly above moka top
+                              radius={0.08}
+    segments={4}
+    rotation={[0, 0, 0]}
+    pressure={pressure}       // <-- link to live pressure
+    maxPressure={1.5}         // max expected pressure of your moka pot
+                            />)}
+
+
 
                         {/* Your transparent GLB pot */}
                         <MokaPotTransparent state={state} />
