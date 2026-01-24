@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useState } from "react";
 import { MOKA_CONTENT } from "../../lib/infoContent";
@@ -7,20 +7,12 @@ import { Info, X } from "lucide-react";
 export default function FooterAttribution() {
     const [showModal, setShowModal] = useState(false);
 
-    const stepColors: Record<string, string> = {
-        idle: "bg-slate-500",
-        heating: "bg-orange-500",
-        brewing: "bg-blue-500",
-        finished: "bg-emerald-500",
-    };
-
-    const steps = Object.entries(MOKA_CONTENT);
+    const steps = Object.values(MOKA_CONTENT);
 
     return (
         <>
             {/* Footer */}
             <div className="flex items-center gap-3 text-xs md:text-sm text-slate-800 py-1 md:py-2">
-                {/* Built by */}
                 <span>
                     Built by{" "}
                     <a
@@ -33,7 +25,6 @@ export default function FooterAttribution() {
                     </a>
                 </span>
 
-                {/* ───────── Desktop (lg+) ───────── */}
                 <span className="hidden lg:inline opacity-40">•</span>
 
                 <a
@@ -45,7 +36,6 @@ export default function FooterAttribution() {
                     Source Code
                 </a>
 
-                {/* ───────── Mobile / Tablet (<lg) ───────── */}
                 <a
                     href="https://github.com/maggie-r-m-88/mqtt-percolator"
                     target="_blank"
@@ -90,29 +80,20 @@ export default function FooterAttribution() {
                             <X className="w-5 h-5 text-slate-800" />
                         </button>
 
-                        <h2 className="text-slate-800 font-bold my-6 text-center underline">
+                        <h2 className="text-slate-800 font-bold my-6 text-center">
                             Moka Pot Process
                         </h2>
 
-                        {/* Timeline */}
-                        <div className="relative pl-6">
-                            {/* Gray vertical line */}
-                            <div className="absolute top-0 left-3 w-0.5 h-full bg-slate-600"></div>
-
-                            {steps.map(([key, step], i) => (
-                                <div key={i} className="relative mb-8 last:mb-0 flex items-start">
-                                    {/* Dot */}
-                                    <div
-                                        className={`absolute left-[-1rem] w-3 h-3 rounded-full ${stepColors[key]}`}
-                                    />
-
-                                    {/* Text */}
-                                    <div className="ml-4">
-                                        <h3 className="text-slate-800 font-semibold text-sm mb-2">{step.title}</h3>
-                                        <p className="text-slate-700 text-sm leading-relaxed">
-                                            {step.body}
-                                        </p>
-                                    </div>
+                        {/* Steps (no timeline styling) */}
+                        <div className="flex flex-col gap-6">
+                            {steps.map((step, i) => (
+                                <div key={i} className="p-4 bg-slate-100/70 rounded-lg">
+                                    <h3 className="text-slate-800 font-semibold text-sm mb-2">
+                                        {step.title}
+                                    </h3>
+                                    <p className="text-slate-700 text-sm leading-relaxed">
+                                        {step.body}
+                                    </p>
                                 </div>
                             ))}
                         </div>
