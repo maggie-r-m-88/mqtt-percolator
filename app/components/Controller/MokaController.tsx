@@ -139,6 +139,20 @@ export default function MokaController({
   const tempValue = temperature ?? 20;
   const pressureValue = pressure ?? 0;
 
+  // Reset temperature and pressure when finished
+  useEffect(() => {
+    if (state === "finished") {
+      // Reset to default levels after a short delay for smooth UX
+      const timeout = setTimeout(() => {
+        setTemperature(20);
+        setPressure(0);
+      }, 500); // 0.5s delay so users see the final "finished" state briefly
+
+      return () => clearTimeout(timeout);
+    }
+  }, [state, setTemperature, setPressure]);
+
+
   return (
     <div className="bg-slate-800/70 backdrop-blur-sm rounded-2xl p-2 md:p-6 border border-slate-700/50 shadow-sm md:shadow-2xl w-full md:w-60 lg:w-100">
 
